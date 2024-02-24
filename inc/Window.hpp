@@ -20,10 +20,15 @@ class Window{
         */
         void init();
 
+        /**
+         * @brief Destroys the window and clean up all initialized SDL libraries
+        */
         void close_window();
 
         /**
          * @brief The class constructor
+         * @param width Width of the window
+         * @param height Height of the window
         */
         Window(uint width, uint height);
 

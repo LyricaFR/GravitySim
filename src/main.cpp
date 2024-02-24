@@ -17,7 +17,12 @@ int main(void){
     /* Event handler */
     SDL_Event e;
 
-    Window window = Window(1200,800);
+    /* Window size */
+    uint w_width = 1200;
+    uint w_height = 800;
+
+    /* Create window */
+    Window window = Window(w_width, w_height);
     
     bool EXIT = false;
 

@@ -35,7 +35,7 @@ void Window::init(){
             else{
                 w_surface = SDL_GetWindowSurface( window );
 
-                SDL_FillRect( w_surface, NULL, SDL_MapRGB( (w_surface)->format, 200, 200, 200 ) );
+                SDL_FillRect( w_surface, NULL, SDL_MapRGB( (w_surface)->format, 0, 0, 0 ) );
                 
                 SDL_UpdateWindowSurface( window );
             }
@@ -53,6 +53,11 @@ void Window::close_window(){
     SDL_Quit();
 }
 
+/**
+ * @brief The class constructor
+ * @param width Width of the window
+ * @param height Height of the window
+*/
 Window::Window(uint width, uint height)
     : w_width {width}
     , w_height {height}
