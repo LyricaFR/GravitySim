@@ -38,6 +38,14 @@ void Window::init(){
                 SDL_FillRect( w_surface, NULL, SDL_MapRGB( (w_surface)->format, 0, 0, 0 ) );
                 
                 SDL_UpdateWindowSurface( window );
+
+                //Create renderer for window
+                gRenderer = SDL_CreateRenderer( window, -1, SDL_RENDERER_ACCELERATED );
+                if( gRenderer == NULL )
+                {
+                    printf( "Renderer could not be created! SDL Error: %s\n", SDL_GetError() );
+                    exit(1);
+                }
             }
             
         }
@@ -53,6 +61,11 @@ void Window::close_window(){
     SDL_Quit();
 }
 
+void Window::update_window(){
+    SDL_UpdateWindowSurface( window );
+    SDL_RenderPresent( gRenderer );
+}
+
 /**
  * @brief The class constructor
  * @param width Width of the window
@@ -64,3 +77,61 @@ Window::Window(uint width, uint height)
     {
         init();
     }
+
+/**
+ * @brief draw a circle on the window (This is an adaptation of the Midpoint circle algorithm)
+ * @param x0 the x coordinate of the center of the circle
+ * @param y0 the y coordinate of the center of the circle
+ * @param radius the radius of the circle (in pixels)
+*/
+void Window::draw_circle(uint x0, uint y0, uint radius){
+    int x = radius - 1;
+    int y = 0;
+    int dx = 1;
+    int dy = 1;
+    int err = dx - (radius << 1);
+
+    while (x >= y)
+    {
+        SDL_RenderDrawPoint(gRenderer ,x0 + x, y0 + y);
+        SDL_RenderDrawPoint(gRenderer ,x0 + y, y0 + x);
+        SDL_RenderDrawPoint(gRenderer ,x0 - y, y0 + x);
+        SDL_RenderDrawPoint(gRenderer ,x0 - x, y0 + y);
+        SDL_RenderDrawPoint(gRenderer ,x0 - x, y0 - y);
+        SDL_RenderDrawPoint(gRenderer ,x0 - y, y0 - x);
+        SDL_RenderDrawPoint(gRenderer ,x0 + y, y0 - x);
+        SDL_RenderDrawPoint(gRenderer ,x0 + x, y0 - y);
+
+        if (err <= 0)
+        {
+            y++;
+            err += dy;
+            dy += 2;
+        }
+        
+        if (err > 0)
+        {
+            x--;
+            dx += 2;
+            err += dx - (radius << 1);
+        }
+    }
+    SDL_SetRenderDrawColor( gRenderer, 0, 0xFF, 0xFF, 0xFF );
+}
+
+void Window::draw_particle(Particle particle){
+    Vector pos = particle.getPosition();
+    uint size = particle.getSize();
+    draw_circle(pos.x, pos.y, size);
+}
+
+/**
+ * @brief Set the color used for the drawings
+ * @param r Value for the red component
+ * @param g Value for the green component
+ * @param b Value for the blue component
+ * @param a Value for the opacity component
+*/
+void Window::set_rendering_color(uint r, uint g, uint b, uint a){
+    SDL_SetRenderDrawColor( gRenderer, r, g, b, a );
+}

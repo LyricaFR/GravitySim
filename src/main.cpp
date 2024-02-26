@@ -24,6 +24,12 @@ int main(void){
     Window window = Window(w_width, w_height);
     
     bool EXIT = false;
+    
+    /* Test */
+    Vector v = {800, 500};
+    Vector d = {0, 0};
+    Particle p = Particle(v, 20, 0, v);
+    window.set_rendering_color(0, 255, 255, 255);
 
     while (!EXIT){
         while (SDL_PollEvent(&e) != 0){
@@ -34,6 +40,8 @@ int main(void){
             }
         }
         nanosleep(&tim, NULL);
+        window.draw_particle(p);
+        window.update_window();
     }
 
     window.close_window();

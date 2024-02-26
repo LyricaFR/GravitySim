@@ -10,6 +10,7 @@ Created: 24/02/2024
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <Particle.hpp>
 
 class Window{
 
@@ -25,6 +26,8 @@ class Window{
         */
         void close_window();
 
+        void update_window();
+
         /**
          * @brief The class constructor
          * @param width Width of the window
@@ -32,11 +35,31 @@ class Window{
         */
         Window(uint width, uint height);
 
+        /**
+         * @brief draw a circle on the window (This is an adaptation of the Midpoint circle algorithm)
+         * @param x0 the x coordinate of the center of the circle
+         * @param y0 the y coordinate of the center of the circle
+         * @param radius the radius of the circle (in pixels)
+        */
+        void draw_circle(uint x0, uint y0, uint radius);
+
+        void draw_particle(Particle particle);
+
+        /**
+         * @brief Set the color used for the drawings
+         * @param r Value for the red component
+         * @param g Value for the green component
+         * @param b Value for the blue component
+         * @param a Value for the opacity component
+        */
+        void set_rendering_color(uint r, uint g, uint b, uint a);
+
 
 
     private:
         SDL_Window* window;
         SDL_Surface* w_surface;
+        SDL_Renderer* gRenderer;
         uint w_width;
         uint w_height;
 };

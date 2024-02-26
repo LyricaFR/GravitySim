@@ -18,13 +18,25 @@ struct Vector {
 class Particle{
     public:
 
-        Particle(Vector position, uint size, float speed, Vector direction, bool fixed = false)
-            : _position {position}
-            , _size {size}
-            , _fixed {fixed}
-            , _speed {speed}
-            , _direction {direction}
-            {}
+        /**
+         * @brief Constructor
+         * @param position Vector describing the coordinates of the particle
+         * @param size Radius of the particle (in pixels)
+         * @param speed The speed of a particle
+         * @param direction Vector describing the direction of the particle
+         * @param fixed Whether the particle is fixed or not
+        */
+        Particle(Vector position, uint size, float speed, Vector direction, bool fixed = false);
+
+        /**
+         * @brief Position accessor
+        */
+        Vector getPosition() const;
+
+        /**
+         * @brief Size accessor
+        */
+        uint getSize() const;
 
     private:
         Vector _position;
