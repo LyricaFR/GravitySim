@@ -5,7 +5,6 @@ Created: 24/02/2024
 
 #include <iostream>
 #include <Window.hpp>
-// #include <time.h>
 
 int main(void){
 
