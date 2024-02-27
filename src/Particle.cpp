@@ -4,7 +4,6 @@ Created: 24/02/2024
 */
 
 #include <Particle.hpp>
-#include <math.h>
 
 /**
  * @brief Constructor
@@ -54,5 +53,33 @@ void Particle::updatePosition(){
         // Updating the direction to keep the particle moving
         _direction.x += step_x;
         _direction.y += step_y;
+    }
+}
+
+/**
+ * @brief Create a set of particle with random directions,
+ *        including nb particles + the center fixed black hole
+ * @param nb The number of particles to create
+ * @param size The size of the particles to create
+*/
+std::vector<Particle> Particle::createParticleSet(uint nb, uint size, uint w_width, uint w_height){
+    std::vector<Particle> particles;
+
+    // Adding black hole
+
+    particles.push_back(Particle(Vector{(float) w_width / 2, (float) w_height / 2}, 4 * size, 0, Vector{0, 0}, true ));
+
+    for (size_t i = 0; i < nb; i++){
+        Vector position = {(float) (rand() % w_width), (float) (rand() % w_height)};
+        Vector direction = {(float) (rand() % w_width), (float) (rand() % w_height)};
+        particles.push_back(Particle(position, size, 1, direction)); // Maybe random speed?
+    }
+
+    return particles;
+}
+
+void Particle::updateParticlesPosition(std::vector<Particle>& particles){
+    for (Particle& p : particles){
+        p.updatePosition();
     }
 }

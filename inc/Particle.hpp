@@ -8,6 +8,11 @@ Created: 24/02/2024
 
 #pragma once
 #include <iostream>
+#include <vector>
+#include <random>
+#include <math.h>
+#include <cstdlib>
+#include <ctime>
 
 struct Vector {
     float x;
@@ -42,6 +47,16 @@ class Particle{
          * @brief Update a particle's position
         */
         void updatePosition();
+
+        /**
+         * @brief Create a set of particle with random directions,
+         *        including nb particles + the center fixed black hole
+         * @param nb The number of particles to create
+         * @param size The size of the particles to create
+        */
+        static std::vector<Particle> createParticleSet(uint nb, uint size, uint w_width, uint w_height);
+
+        static void updateParticlesPosition(std::vector<Particle>& particles);
 
     private:
         Vector _position;

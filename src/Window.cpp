@@ -132,6 +132,12 @@ void Window::draw_particle(Particle particle){
     draw_circle(pos.x, pos.y, size);
 }
 
+void Window::draw_particles(std::vector<Particle>& particles){
+    for (auto p : particles){
+        draw_particle(p);
+    }
+}
+
 /**
  * @brief Set the color used for the drawings
  * @param r Value for the red component

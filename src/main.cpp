@@ -8,6 +8,8 @@ Created: 24/02/2024
 
 int main(void){
 
+    std::srand(std::time(0));
+
     /* Values used for nanosleep */
     struct timespec tim;
     tim.tv_sec = 0;
@@ -26,11 +28,8 @@ int main(void){
     bool EXIT = false;
     
     /* Test */
-    Vector position = {100, 100};
-    Vector direction = {900, 500};
-    Vector b_position = {(float) w_width/2, (float) w_height/2};
-    Particle p = Particle(position, 20, 1, direction);
-    Particle blackHole = Particle(b_position, 50, 1, direction, true);
+    // Generating particles
+    auto particles = Particle::createParticleSet(2, 10, w_width, w_height);
     window.set_rendering_color(0, 255, 255, 255);
 
     while (!EXIT){
@@ -41,10 +40,9 @@ int main(void){
                 }
             }
         }
-        window.draw_particle(p);
-        window.draw_particle(blackHole);
+        window.draw_particles(particles);
         window.update_window();
-        p.updatePosition();
+        Particle::updateParticlesPosition(particles);
         nanosleep(&tim, NULL);
         window.clear_window();
     }

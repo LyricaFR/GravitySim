@@ -47,6 +47,8 @@ class Window{
 
         void draw_particle(Particle particle);
 
+        void draw_particles(std::vector<Particle>& particles);
+
         /**
          * @brief Set the color used for the drawings
          * @param r Value for the red component
