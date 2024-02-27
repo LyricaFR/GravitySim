@@ -53,9 +53,15 @@ class Particle{
          *        including nb particles + the center fixed black hole
          * @param nb The number of particles to create
          * @param size The size of the particles to create
+         * @param w_width The width of the window
+         * @param w_height The height of the window
         */
         static std::vector<Particle> createParticleSet(uint nb, uint size, uint w_width, uint w_height);
 
+        /**
+         * @brief Update the position of all particles contained in the vector
+         * @param particles Reference to a vector of particle
+        */
         static void updateParticlesPosition(std::vector<Particle>& particles);
 
     private:

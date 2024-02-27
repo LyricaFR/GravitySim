@@ -61,12 +61,18 @@ void Window::close_window(){
     SDL_Quit();
 }
 
+/**
+ * @brief Update the screen with all the rendering
+*/
 void Window::update_window(){
     SDL_SetRenderDrawColor( gRenderer, 0, 0xFF, 0xFF, 0xFF );
     SDL_UpdateWindowSurface( window );
     SDL_RenderPresent( gRenderer );
 }
 
+/**
+ * @brief Clears the window of all rendered targets
+*/
 void Window::clear_window(){
     // TODO : Code color management better ...
     SDL_SetRenderDrawColor( gRenderer, 0, 0, 0, 0xFF ); // Set color to black when clearing window
@@ -126,12 +132,20 @@ void Window::draw_circle(int x0, int y0, uint radius){
     }
 }
 
+/**
+ * @brief Draw a particle
+ * @param particle The particle to be drawn
+*/
 void Window::draw_particle(Particle particle){
     Vector pos = particle.getPosition();
     uint size = particle.getSize();
     draw_circle(pos.x, pos.y, size);
 }
 
+/**
+ * @brief Draw all the particles in the vector
+ * @param particles A vector of particles
+*/
 void Window::draw_particles(std::vector<Particle>& particles){
     for (auto p : particles){
         draw_particle(p);

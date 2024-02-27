@@ -61,6 +61,8 @@ void Particle::updatePosition(){
  *        including nb particles + the center fixed black hole
  * @param nb The number of particles to create
  * @param size The size of the particles to create
+ * @param w_width The width of the window
+ * @param w_height The height of the window
 */
 std::vector<Particle> Particle::createParticleSet(uint nb, uint size, uint w_width, uint w_height){
     std::vector<Particle> particles;
@@ -78,6 +80,10 @@ std::vector<Particle> Particle::createParticleSet(uint nb, uint size, uint w_wid
     return particles;
 }
 
+/**
+ * @brief Update the position of all particles contained in the vector
+ * @param particles Reference to a vector of particle
+*/
 void Particle::updateParticlesPosition(std::vector<Particle>& particles){
     for (Particle& p : particles){
         p.updatePosition();

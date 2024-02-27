@@ -26,8 +26,14 @@ class Window{
         */
         void close_window();
 
+        /**
+         * @brief Update the screen with all the rendering
+        */
         void update_window();
 
+        /**
+         * @brief Clears the window of all rendered targets
+        */
         void clear_window();
 
         /**
@@ -45,8 +51,16 @@ class Window{
         */
         void draw_circle(int x0, int y0, uint radius);
 
+        /**
+         * @brief Draw a particle
+         * @param particle The particle to be drawn
+        */
         void draw_particle(Particle particle);
 
+        /**
+         * @brief Draw all the particles in the vector
+         * @param particles A vector of particles
+        */
         void draw_particles(std::vector<Particle>& particles);
 
         /**
