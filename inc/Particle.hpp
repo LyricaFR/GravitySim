@@ -10,8 +10,8 @@ Created: 24/02/2024
 #include <iostream>
 
 struct Vector {
-    uint x;
-    uint y;
+    float x;
+    float y;
 };
 
 
@@ -37,6 +37,11 @@ class Particle{
          * @brief Size accessor
         */
         uint getSize() const;
+
+        /**
+         * @brief Update a particle's position
+        */
+        void updatePosition();
 
     private:
         Vector _position;

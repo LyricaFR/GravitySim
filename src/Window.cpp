@@ -62,8 +62,16 @@ void Window::close_window(){
 }
 
 void Window::update_window(){
+    SDL_SetRenderDrawColor( gRenderer, 0, 0xFF, 0xFF, 0xFF );
     SDL_UpdateWindowSurface( window );
     SDL_RenderPresent( gRenderer );
+}
+
+void Window::clear_window(){
+    // TODO : Code color management better ...
+    SDL_SetRenderDrawColor( gRenderer, 0, 0, 0, 0xFF ); // Set color to black when clearing window
+    SDL_RenderClear(gRenderer);
+    SDL_SetRenderDrawColor( gRenderer, 0, 0xFF, 0xFF, 0xFF );  // Set color back to drawing color
 }
 
 /**
@@ -84,7 +92,7 @@ Window::Window(uint width, uint height)
  * @param y0 the y coordinate of the center of the circle
  * @param radius the radius of the circle (in pixels)
 */
-void Window::draw_circle(uint x0, uint y0, uint radius){
+void Window::draw_circle(int x0, int y0, uint radius){
     int x = radius - 1;
     int y = 0;
     int dx = 1;
@@ -116,7 +124,6 @@ void Window::draw_circle(uint x0, uint y0, uint radius){
             err += dx - (radius << 1);
         }
     }
-    SDL_SetRenderDrawColor( gRenderer, 0, 0xFF, 0xFF, 0xFF );
 }
 
 void Window::draw_particle(Particle particle){

@@ -28,6 +28,8 @@ class Window{
 
         void update_window();
 
+        void clear_window();
+
         /**
          * @brief The class constructor
          * @param width Width of the window
@@ -41,7 +43,7 @@ class Window{
          * @param y0 the y coordinate of the center of the circle
          * @param radius the radius of the circle (in pixels)
         */
-        void draw_circle(uint x0, uint y0, uint radius);
+        void draw_circle(int x0, int y0, uint radius);
 
         void draw_particle(Particle particle);
 
