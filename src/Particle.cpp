@@ -44,7 +44,7 @@ void Particle::updatePosition(){
 
         _speed = distance / 1000000000000;
 
-        float factor = _speed / distance; // Speed factor by which the particle moves
+        // float factor = _speed / distance; // Speed factor by which the particle moves
 
         // float step_x = distances.x * factor;
         // float step_y = distances.y * factor;
@@ -115,17 +115,25 @@ double Particle::computeGravitationalForce(Particle& p1, Particle& p2){
 */
 void Particle::applyGravity(std::vector<Particle>& particles){
     for (Particle& p : particles){
+        Vector total_force = {0, 0};
+
         for (Particle& other : particles){
 
-            // Distance between the two particles
-            double F = computeGravitationalForce(p, other);
+            if (&p != &other){ 
 
-            // Vector from p to other
-            Vector force_direction = {other._position.x - p._position.x, other._position.y - p._position.y};
+                // Distance between the two particles
+                double F = computeGravitationalForce(p, other);
 
-            p._direction.x = p._direction.x + F * force_direction.x;
-            p._direction.y = p._direction.y + F * force_direction.y;
+                // Vector from p to other
+                Vector force_direction = {other._position.x - p._position.x, other._position.y - p._position.y};
+
+                total_force.x += F * force_direction.x;
+                total_force.y += F * force_direction.y;
+            }
         }
+
+        p._direction.x += total_force.x;
+        p._direction.y += total_force.y;
     }
 }
 
