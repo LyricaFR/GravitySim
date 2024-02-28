@@ -42,10 +42,15 @@ void Particle::updatePosition(){
         Vector distances = {_direction.x - _position.x, _direction.y - _position.y};
         float distance = sqrt(pow(distances.x, 2) + pow(distances.y, 2));
 
+        _speed = distance / 1000000000000;
+
         float factor = _speed / distance; // Speed factor by which the particle moves
 
-        float step_x = distances.x * factor;
-        float step_y = distances.y * factor;
+        // float step_x = distances.x * factor;
+        // float step_y = distances.y * factor;
+
+        float step_x = distances.x * _speed;
+        float step_y = distances.y * _speed;
 
         _position.x = _position.x + step_x; 
         _position.y = _position.y + step_y;
@@ -74,7 +79,7 @@ std::vector<Particle> Particle::createParticleSet(uint nb, uint size, uint w_wid
     for (size_t i = 0; i < nb; i++){
         Vector position = {(float) (rand() % w_width), (float) (rand() % w_height)};
         Vector direction = {(float) (rand() % w_width), (float) (rand() % w_height)};
-        particles.push_back(Particle(position, size, 1, direction)); // Maybe random speed?
+        particles.push_back(Particle(position, size, 3, direction)); // Maybe random speed?
     }
 
     return particles;
@@ -89,3 +94,38 @@ void Particle::updateParticlesPosition(std::vector<Particle>& particles){
         p.updatePosition();
     }
 }
+
+// Real value of the gravitational constant is 6.67430e-11
+const double Particle::G = 6.67430 * 1500; // The gravitational constant in Newton's Law of Universal Gravitation
+
+/**
+ * @brief Compute the gravitational force between two particle using Newton's equation for universal gravitation
+ * @param p1 Reference to the first particle
+ * @param p2 Reference to the second particle
+*/
+double Particle::computeGravitationalForce(Particle& p1, Particle& p2){
+    Vector distances = {p1._position.x - p2._position.x, p1._position.y - p2._position.y};
+    float distance = sqrt(pow(distances.x, 2) + pow(distances.y, 2));
+    return distance == 0 ? 0 : (G * p1._size * p2._size) / pow(distance, 2);
+}
+
+/**
+ * @brief Apply the gravity of all the particle on all other particles
+ * @param particles Reference to a vector of particle
+*/
+void Particle::applyGravity(std::vector<Particle>& particles){
+    for (Particle& p : particles){
+        for (Particle& other : particles){
+
+            // Distance between the two particles
+            double F = computeGravitationalForce(p, other);
+
+            // Vector from p to other
+            Vector force_direction = {other._position.x - p._position.x, other._position.y - p._position.y};
+
+            p._direction.x = p._direction.x + F * force_direction.x;
+            p._direction.y = p._direction.y + F * force_direction.y;
+        }
+    }
+}
+

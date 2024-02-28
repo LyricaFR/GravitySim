@@ -64,12 +64,22 @@ class Particle{
         */
         static void updateParticlesPosition(std::vector<Particle>& particles);
 
+        static double computeGravitationalForce(Particle& p1, Particle& p2);
+
+        /**
+         * @brief Apply the gravity of all the particle on all other particles
+         * @param particles Reference to a vector of particle
+        */
+        static void applyGravity(std::vector<Particle>& particles);
+
     private:
         Vector _position;
         uint _size;
         bool _fixed;  // Whether the particle can move or not
         float _speed;
         Vector _direction;
+
+        static const double G;
 };
 
 #endif
