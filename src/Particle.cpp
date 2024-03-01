@@ -41,7 +41,7 @@ float Particle::getArea() const{
 
 bool Particle::isInContact(Particle& other) {
     float center_dist = sqrt(pow(2,_position.x - other._position.x) + pow(2,_position.y - other._position.y));
-    float sum_of_reach = _size + other.getSize();
+    float sum_of_reach = _size/2 + other.getSize()/2;
     return sum_of_reach > center_dist;
 }
 
