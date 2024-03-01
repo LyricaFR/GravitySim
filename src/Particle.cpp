@@ -13,7 +13,7 @@ Created: 24/02/2024
  * @param direction Vector describing the direction of the particle
  * @param fixed Whether the particle's position is fixed or not
 */
-Particle::Particle(Vector position, uint size, float speed, Vector direction, bool fixed)
+Particle::Particle(Vector position, float size, float speed, Vector direction, bool fixed)
     : _position {position}
     , _size {size}
     , _fixed {fixed}
@@ -28,8 +28,21 @@ Vector Particle::getPosition() const{
 /**
  * @brief Size accessor
 */
-uint Particle::getSize() const{
+float Particle::getSize() const{
     return _size;
+}
+
+/**
+ * @brief Calculate the area
+*/
+float Particle::getArea() const{
+    return M_PI * pow(2,(_size/2));
+}
+
+bool Particle::isInContact(Particle& other) {
+    float center_dist = sqrt(pow(2,_position.x - other._position.x) + pow(2,_position.y - other._position.y));
+    float sum_of_reach = _size + other.getSize();
+    return sum_of_reach > center_dist;
 }
 
 /**
@@ -42,7 +55,7 @@ void Particle::updatePosition(){
         Vector distances = {_direction.x - _position.x, _direction.y - _position.y};
         float distance = sqrt(pow(distances.x, 2) + pow(distances.y, 2));
 
-        _speed = distance / 1000000000000;
+        _speed = (distance+1) / 1000000000000;
 
         // float factor = _speed / distance; // Speed factor by which the particle moves
 
@@ -69,7 +82,7 @@ void Particle::updatePosition(){
  * @param w_width The width of the window
  * @param w_height The height of the window
 */
-std::vector<Particle> Particle::createParticleSet(uint nb, uint size, uint w_width, uint w_height){
+std::vector<Particle> Particle::createParticleSet(uint nb, float size, uint w_width, uint w_height){
     std::vector<Particle> particles;
 
     // Adding black hole
@@ -135,5 +148,34 @@ void Particle::applyGravity(std::vector<Particle>& particles){
         p._direction.x += total_force.x;
         p._direction.y += total_force.y;
     }
+}
+
+/**
+ * @brief Apply the collision of all the particle on all other particles
+ * @param particles Reference to a vector of particle
+*/
+void Particle::applyCollision(std::vector<Particle>& particles){
+
+    float new_radius;
+    for (Particle& p : particles){
+        for (Particle& other : particles){
+
+            if (&p != &other && !other._toRemove && !other._fixed){ 
+
+                if (p.isInContact(other)) {
+                    
+                    other._toRemove = true;
+
+                    //new_radius = p.getArea() + other.getArea();
+                    //p._size = sqrt(new_radius/M_PI)*2;
+                    p._size += other._size;
+                    p._speed /= 2;
+                    p._direction = Vector{other._direction.x + p._direction.x, other._direction.y + p._direction.y};
+                }
+            }
+        }
+    }
+
+    particles.erase(std::remove_if(particles.begin(),particles.end(), [](const Particle& p) {return p._toRemove;}), particles.end());
 }
 
