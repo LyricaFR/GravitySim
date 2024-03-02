@@ -13,7 +13,7 @@ Created: 24/02/2024
  * @param direction Vector describing the direction of the particle
  * @param fixed Whether the particle's position is fixed or not
 */
-Particle::Particle(Vector position, uint size, float speed, Vector direction, bool fixed)
+Particle::Particle(Vector position, uint size, Vector speed, Vector direction, bool fixed)
     : _position {position}
     , _size {size}
     , _fixed {fixed}
@@ -42,22 +42,29 @@ void Particle::updatePosition(){
         Vector distances = {_direction.x - _position.x, _direction.y - _position.y};
         float distance = sqrt(pow(distances.x, 2) + pow(distances.y, 2));
 
-        _speed = distance / 1000000000000;
+        distances.x /= distance;
+        distances.y /= distance;
 
         // float factor = _speed / distance; // Speed factor by which the particle moves
 
         // float step_x = distances.x * factor;
         // float step_y = distances.y * factor;
 
-        float step_x = distances.x * _speed;
-        float step_y = distances.y * _speed;
+        _speed.x = distance / 1000000;
+        _speed.y = distance / 1000000;
+
+        float step_x = distances.x * _speed.x;
+        float step_y = distances.y * _speed.y;
+
+        printf("x: %f\n", step_x);
+        printf("y: %f\n\n", step_y);
 
         _position.x = _position.x + step_x; 
         _position.y = _position.y + step_y;
 
         // Updating the direction to keep the particle moving
-        _direction.x += step_x;
-        _direction.y += step_y;
+        // _direction.x += step_x;
+        // _direction.y += step_y;
     }
 }
 
@@ -74,12 +81,12 @@ std::vector<Particle> Particle::createParticleSet(uint nb, uint size, uint w_wid
 
     // Adding black hole
 
-    particles.push_back(Particle(Vector{(float) w_width / 2, (float) w_height / 2}, 4 * size, 0, Vector{0, 0}, true ));
+    particles.push_back(Particle(Vector{(float) w_width / 2, (float) w_height / 2}, 4 * size, Vector{0,0}, Vector{0, 0}, true ));
 
     for (size_t i = 0; i < nb; i++){
         Vector position = {(float) (rand() % w_width), (float) (rand() % w_height)};
         Vector direction = {(float) (rand() % w_width), (float) (rand() % w_height)};
-        particles.push_back(Particle(position, size, 3, direction)); // Maybe random speed?
+        particles.push_back(Particle(position, size, Vector{3,3}, direction)); // Maybe random speed?
     }
 
     return particles;
@@ -131,6 +138,9 @@ void Particle::applyGravity(std::vector<Particle>& particles){
                 total_force.y += F * force_direction.y;
             }
         }
+
+        p._speed.x += (total_force.x * p._speed.x) /p._direction.x;
+        p._speed.y += (total_force.y * p._speed.y) /p._direction.y;
 
         p._direction.x += total_force.x;
         p._direction.y += total_force.y;

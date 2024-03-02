@@ -31,7 +31,7 @@ class Particle{
          * @param direction Vector describing the direction of the particle
          * @param fixed Whether the particle is fixed or not
         */
-        Particle(Vector position, uint size, float speed, Vector direction, bool fixed = false);
+        Particle(Vector position, uint size, Vector speed, Vector direction, bool fixed = false);
 
         /**
          * @brief Position accessor
@@ -76,7 +76,7 @@ class Particle{
         Vector _position;
         uint _size;
         bool _fixed;  // Whether the particle can move or not
-        float _speed;
+        Vector _speed;
         Vector _direction;
 
         static const double G;
