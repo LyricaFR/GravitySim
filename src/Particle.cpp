@@ -56,9 +56,6 @@ void Particle::updatePosition(){
         float step_x = distances.x * _speed.x;
         float step_y = distances.y * _speed.y;
 
-        printf("x: %f\n", step_x);
-        printf("y: %f\n\n", step_y);
-
         _position.x = _position.x + step_x; 
         _position.y = _position.y + step_y;
 
