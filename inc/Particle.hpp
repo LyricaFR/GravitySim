@@ -100,6 +100,7 @@ class Particle{
         bool _toRemove = false;
 
         static const double G;
+        static const float BH_RADIUS;
 };
 
 #endif

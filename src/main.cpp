@@ -30,7 +30,7 @@ int main(void){
     
     /* Test */
     // Generating particles
-    auto particles = Particle::createParticleSet(10, 10, w_width, w_height);
+    auto particles = Particle::createParticleSet(15, 10, w_width, w_height);
 
     while (!EXIT){
         while (SDL_PollEvent(&e) != 0){

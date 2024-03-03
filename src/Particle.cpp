@@ -5,6 +5,8 @@ Created: 24/02/2024
 
 #include <Particle.hpp>
 
+const float Particle::BH_RADIUS = 20;
+
 /**
  * @brief Constructor
  * @param position Vector describing the coordinates of the particle
@@ -87,11 +89,17 @@ std::vector<Particle> Particle::createParticleSet(uint nb, float size, uint w_wi
 
     // Adding black hole
 
-    particles.push_back(Particle(Vector{(float) w_width / 2, (float) w_height / 2}, 4 * size, 0, Vector{0, 0}, true ));
+    particles.push_back(Particle(Vector{(float) w_width / 2, (float) w_height / 2}, BH_RADIUS, 0, Vector{0, 0}, true ));
 
     for (size_t i = 0; i < nb; i++){
         Vector position = {(float) (rand() % w_width), (float) (rand() % w_height)};
-        Vector direction = {(float) (rand() % w_width), (float) (rand() % w_height)};
+
+        // TODO Generate random direction in a cleaner way.        
+        Vector direction = {(float) (rand() % w_width * 2000), (float) (rand() % w_height * 2000)};
+
+        direction.x = (rand() % 2 == 1 ? -direction.x : direction.x);
+        direction.y = (rand() % 2 == 1 ? -direction.y : direction.y);
+
         particles.push_back(Particle(position, size, 3, direction)); // Maybe random speed?
     }
 
@@ -109,7 +117,7 @@ void Particle::updateParticlesPosition(std::vector<Particle>& particles){
 }
 
 // Real value of the gravitational constant is 6.67430e-11
-const double Particle::G = 6.67430 * 1500; // The gravitational constant in Newton's Law of Universal Gravitation
+const double Particle::G = 6.67430 * 500; // The gravitational constant in Newton's Law of Universal Gravitation
 
 /**
  * @brief Compute the gravitational force between two particle using Newton's equation for universal gravitation
@@ -176,7 +184,7 @@ void Particle::applyCollision(std::vector<Particle>& particles){
                     //p._size = sqrt(new_radius/M_PI)*2;
                     p._size += other._size;
                     p._speed /= 2;
-                    p._direction = Vector{other._direction.x + p._direction.x, other._direction.y + p._direction.y};
+                    p._direction = Vector{(other._direction.x + p._direction.x) / 2, (other._direction.y + p._direction.y) / 2};
                 }
             }
         }
@@ -184,4 +192,3 @@ void Particle::applyCollision(std::vector<Particle>& particles){
     
     particles.erase(std::remove_if(particles.begin(),particles.end(), [](const Particle& p) {return p._toRemove;}), particles.end());
 }
-
