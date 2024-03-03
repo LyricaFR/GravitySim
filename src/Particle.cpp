@@ -38,7 +38,7 @@ float Particle::getSize() const{
  * @brief Calculate the area
 */
 float Particle::getArea() const{
-    return M_PI * pow(2,(_size/2));
+    return M_PI * pow((_size/2),2);
 }
 
 bool Particle::isInContact(Particle& other) {
@@ -175,20 +175,20 @@ void Particle::applyCollision(std::vector<Particle>& particles){
                         other._toRemove = true;
                     }
 
-                    // Area accurate grow ( NOT WORKING, reach infinity )
-                    // new_radius = p.getArea() + other.getArea();
-                    // p._size = sqrt(new_radius/M_PI)*2;
-                    // std::cout << p._size << std::endl;
-
+                    
 
                     // Fast grow
-                    //p._size += other._size/std::log(p._size);
+                    //p._size += other._size
+
+                    // Area accurate grow
+                    new_radius = p.getArea() + other.getArea();
+                    p._size = sqrt(new_radius/M_PI)*2;
 
                     // Medium grow
                     //p._size += other._size/std::log(p._size);
                     
                     // Slow grow
-                    p._size += std::log(1+other._size/p._size);
+                    //p._size += std::log(1+other._size/p._size);
 
                     p._speed /= 2;
                     p._direction = Vector{(other._direction.x + p._direction.x) / 2, (other._direction.y + p._direction.y) / 2};
