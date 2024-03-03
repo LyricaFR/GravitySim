@@ -163,32 +163,39 @@ void Particle::applyGravity(std::vector<Particle>& particles){
  * @param particles Reference to a vector of particle
 */
 void Particle::applyCollision(std::vector<Particle>& particles){
-
     float new_radius;
-    for (Particle& p : particles){
-        for (Particle& other : particles){
-
-            if (p._toRemove){
-                break;  // If current particle is to be removed, no point to keep computing
-            }
-
-            if (&p != &other && !other._toRemove && !other._fixed){ 
-
+    for (Particle& p : particles) {
+        if (p._toRemove) {
+            break;  // If current particle is to be removed, no point to keep computing
+        }
+        for (Particle& other : particles) {
+            if (&p != &other && !other._toRemove && !other._fixed) {
                 if (p.isInContact(other)) {
-                    
-                    if (!p._toRemove && !other._toRemove){
+                    if (!p._toRemove && !other._toRemove) {
                         other._toRemove = true;
                     }
 
-                    //new_radius = p.getArea() + other.getArea();
-                    //p._size = sqrt(new_radius/M_PI)*2;
-                    p._size += other._size;
+                    // Area accurate grow ( NOT WORKING, reach infinity )
+                    // new_radius = p.getArea() + other.getArea();
+                    // p._size = sqrt(new_radius/M_PI)*2;
+                    // std::cout << p._size << std::endl;
+
+
+                    // Fast grow
+                    //p._size += other._size/std::log(p._size);
+
+                    // Medium grow
+                    //p._size += other._size/std::log(p._size);
+                    
+                    // Slow grow
+                    p._size += std::log(1+other._size/p._size);
+
                     p._speed /= 2;
                     p._direction = Vector{(other._direction.x + p._direction.x) / 2, (other._direction.y + p._direction.y) / 2};
                 }
             }
         }
     }
-    
+
     particles.erase(std::remove_if(particles.begin(),particles.end(), [](const Particle& p) {return p._toRemove;}), particles.end());
 }
