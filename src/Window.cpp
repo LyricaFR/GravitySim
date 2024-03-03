@@ -152,7 +152,7 @@ void Window::draw_particles(std::vector<Particle>& particles){
 
         for (Particle& other : particles){
             if (&p != &other && p.isInContact(other)){
-                set_rendering_color(255, 0, 255, 255);
+                set_rendering_color(255, 0, 255, 255);  // Draw particle in pink if they are in contact
             }
         }
         draw_particle(p);

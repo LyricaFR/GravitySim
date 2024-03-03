@@ -30,7 +30,7 @@ int main(void){
     
     /* Test */
     // Generating particles
-    auto particles = Particle::createParticleSet(5, 10, w_width, w_height);
+    auto particles = Particle::createParticleSet(10, 10, w_width, w_height);
 
     while (!EXIT){
         while (SDL_PollEvent(&e) != 0){
@@ -43,8 +43,8 @@ int main(void){
         Particle::applyGravity(particles);
         window.draw_particles(particles);
         window.update_window();
-        //Particle::updateParticlesPosition(particles);
-        //Particle::applyCollision(particles);
+        Particle::updateParticlesPosition(particles);
+        Particle::applyCollision(particles);
         nanosleep(&tim, NULL);
         window.clear_window();
     }

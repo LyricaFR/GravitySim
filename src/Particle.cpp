@@ -40,9 +40,9 @@ float Particle::getArea() const{
 }
 
 bool Particle::isInContact(Particle& other) {
-    float center_dist = sqrt(pow(2,_position.x - other._position.x) + pow(2,_position.y - other._position.y));
-    float sum_of_reach = _size/2 + other.getSize()/2;
-    return sum_of_reach > center_dist;
+    float center_dist = sqrt(pow(_position.x - other._position.x, 2) + pow(_position.y - other._position.y, 2));
+    float sum_of_reach = _size + other.getSize();
+    return sum_of_reach >= center_dist;
 }
 
 /**
@@ -160,11 +160,17 @@ void Particle::applyCollision(std::vector<Particle>& particles){
     for (Particle& p : particles){
         for (Particle& other : particles){
 
+            if (p._toRemove){
+                break;  // If current particle is to be removed, no point to keep computing
+            }
+
             if (&p != &other && !other._toRemove && !other._fixed){ 
 
                 if (p.isInContact(other)) {
                     
-                    other._toRemove = true;
+                    if (!p._toRemove && !other._toRemove){
+                        other._toRemove = true;
+                    }
 
                     //new_radius = p.getArea() + other.getArea();
                     //p._size = sqrt(new_radius/M_PI)*2;
@@ -175,7 +181,7 @@ void Particle::applyCollision(std::vector<Particle>& particles){
             }
         }
     }
-
+    
     particles.erase(std::remove_if(particles.begin(),particles.end(), [](const Particle& p) {return p._toRemove;}), particles.end());
 }
 
