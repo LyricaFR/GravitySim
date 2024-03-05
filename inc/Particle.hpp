@@ -13,6 +13,8 @@ Created: 24/02/2024
 #include <math.h>
 #include <cstdlib>
 #include <ctime>
+#include <cmath>
+#include <algorithm>
 
 struct Vector {
     float x;
@@ -30,8 +32,9 @@ class Particle{
          * @param speed The speed of a particle
          * @param direction Vector describing the direction of the particle
          * @param fixed Whether the particle is fixed or not
+         * @param toRemove Whether the particle should be removed
         */
-        Particle(Vector position, uint size, Vector speed, Vector direction, bool fixed = false);
+        Particle(Vector position, float size, Vector speed, Vector direction, bool fixed = false);
 
         /**
          * @brief Position accessor
@@ -41,7 +44,17 @@ class Particle{
         /**
          * @brief Size accessor
         */
-        uint getSize() const;
+        float getSize() const;
+
+        /**
+         * @brief Calculate the area
+        */
+        float getArea() const;
+
+        /**
+         * @brief Check whether the particle is in contact with another
+        */
+        bool isInContact(Particle& other);
 
         /**
          * @brief Update a particle's position
@@ -56,7 +69,7 @@ class Particle{
          * @param w_width The width of the window
          * @param w_height The height of the window
         */
-        static std::vector<Particle> createParticleSet(uint nb, uint size, uint w_width, uint w_height);
+        static std::vector<Particle> createParticleSet(uint nb, float size, uint w_width, uint w_height);
 
         /**
          * @brief Update the position of all particles contained in the vector
@@ -72,14 +85,22 @@ class Particle{
         */
         static void applyGravity(std::vector<Particle>& particles);
 
+        /**
+         * @brief Apply the collision of all the particle on all other particles
+         * @param particles Reference to a vector of particle
+        */
+        static void applyCollision(std::vector<Particle>& particles);
+
     private:
         Vector _position;
-        uint _size;
+        float _size;
         bool _fixed;  // Whether the particle can move or not
         Vector _speed;
         Vector _direction;
+        bool _toRemove = false;
 
         static const double G;
+        static const float BH_RADIUS;
 };
 
 #endif

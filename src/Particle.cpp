@@ -5,6 +5,8 @@ Created: 24/02/2024
 
 #include <Particle.hpp>
 
+const float Particle::BH_RADIUS = 20;
+
 /**
  * @brief Constructor
  * @param position Vector describing the coordinates of the particle
@@ -13,7 +15,7 @@ Created: 24/02/2024
  * @param direction Vector describing the direction of the particle
  * @param fixed Whether the particle's position is fixed or not
 */
-Particle::Particle(Vector position, uint size, Vector speed, Vector direction, bool fixed)
+Particle::Particle(Vector position, float size, Vector speed, Vector direction, bool fixed)
     : _position {position}
     , _size {size}
     , _fixed {fixed}
@@ -28,8 +30,21 @@ Vector Particle::getPosition() const{
 /**
  * @brief Size accessor
 */
-uint Particle::getSize() const{
+float Particle::getSize() const{
     return _size;
+}
+
+/**
+ * @brief Calculate the area
+*/
+float Particle::getArea() const{
+    return M_PI * pow((_size),2);
+}
+
+bool Particle::isInContact(Particle& other) {
+    float center_dist = sqrt(pow(_position.x - other._position.x, 2) + pow(_position.y - other._position.y, 2));
+    float sum_of_reach = _size + other.getSize();
+    return sum_of_reach >= center_dist;
 }
 
 /**
@@ -73,16 +88,22 @@ void Particle::updatePosition(){
  * @param w_width The width of the window
  * @param w_height The height of the window
 */
-std::vector<Particle> Particle::createParticleSet(uint nb, uint size, uint w_width, uint w_height){
+std::vector<Particle> Particle::createParticleSet(uint nb, float size, uint w_width, uint w_height){
     std::vector<Particle> particles;
 
     // Adding black hole
 
-    particles.push_back(Particle(Vector{(float) w_width / 2, (float) w_height / 2}, 4 * size, Vector{0,0}, Vector{0, 0}, true ));
+    particles.push_back(Particle(Vector{(float) w_width / 2, (float) w_height / 2}, BH_RADIUS, Vector{0,0}, Vector{0, 0}, true ));
 
     for (size_t i = 0; i < nb; i++){
         Vector position = {(float) (rand() % w_width), (float) (rand() % w_height)};
-        Vector direction = {(float) (rand() % w_width), (float) (rand() % w_height)};
+
+        // TODO Generate random direction in a cleaner way.        
+        Vector direction = {(float) (rand() % w_width * 2000), (float) (rand() % w_height * 2000)};
+
+        direction.x = (rand() % 2 == 1 ? -direction.x : direction.x);
+        direction.y = (rand() % 2 == 1 ? -direction.y : direction.y);
+
         particles.push_back(Particle(position, size, Vector{3,3}, direction)); // Maybe random speed?
     }
 
@@ -100,7 +121,7 @@ void Particle::updateParticlesPosition(std::vector<Particle>& particles){
 }
 
 // Real value of the gravitational constant is 6.67430e-11
-const double Particle::G = 6.67430 * 1500; // The gravitational constant in Newton's Law of Universal Gravitation
+const double Particle::G = 6.67430 * 500; // The gravitational constant in Newton's Law of Universal Gravitation
 
 /**
  * @brief Compute the gravitational force between two particle using Newton's equation for universal gravitation
@@ -144,3 +165,44 @@ void Particle::applyGravity(std::vector<Particle>& particles){
     }
 }
 
+/**
+ * @brief Apply the collision of all the particle on all other particles
+ * @param particles Reference to a vector of particle
+*/
+void Particle::applyCollision(std::vector<Particle>& particles){
+    float new_area;
+    for (Particle& p : particles) {
+        if (p._toRemove) {
+            break;  // If current particle is to be removed, no point to keep computing
+        }
+        for (Particle& other : particles) {
+            if (&p != &other && !other._toRemove && !other._fixed) {
+                if (p.isInContact(other)) {
+                    if (!p._toRemove && !other._toRemove) {
+                        other._toRemove = true;
+                    }
+
+                    
+
+                    // Fast grow
+                    //p._size += other._size
+
+                    // Area accurate grow
+                    new_area = p.getArea() + other.getArea();
+                    p._size = sqrt(new_area/M_PI);
+
+                    // Medium grow
+                    //p._size += other._size/std::log(p._size);
+                    
+                    // Slow grow
+                    //p._size += std::log(1+other._size/p._size);
+
+                    //p._speed /= 2;
+                    p._direction = Vector{(other._direction.x + p._direction.x) / 2, (other._direction.y + p._direction.y) / 2};
+                }
+            }
+        }
+    }
+
+    particles.erase(std::remove_if(particles.begin(),particles.end(), [](const Particle& p) {return p._toRemove;}), particles.end());
+}
