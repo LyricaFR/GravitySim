@@ -28,13 +28,13 @@ class Particle{
         /**
          * @brief Constructor
          * @param position Vector describing the coordinates of the particle
-         * @param size Radius of the particle (in pixels)
+         * @param radius Radius of the particle (in pixels)
          * @param speed The speed of a particle
          * @param direction Vector describing the direction of the particle
          * @param fixed Whether the particle is fixed or not
          * @param toRemove Whether the particle should be removed
         */
-        Particle(Vector position, float size, Vector speed, Vector direction, bool fixed = false);
+        Particle(Vector position, float radius, Vector speed, Vector direction, bool fixed = false);
 
         /**
          * @brief Position accessor
@@ -42,9 +42,9 @@ class Particle{
         Vector getPosition() const;
 
         /**
-         * @brief Size accessor
+         * @brief Radius accessor
         */
-        float getSize() const;
+        float getRadius() const;
 
         /**
          * @brief Calculate the area
@@ -65,11 +65,11 @@ class Particle{
          * @brief Create a set of particle with random directions,
          *        including nb particles + the center fixed black hole
          * @param nb The number of particles to create
-         * @param size The size of the particles to create
+         * @param radius The radius of the particles to create
          * @param w_width The width of the window
          * @param w_height The height of the window
         */
-        static std::vector<Particle> createParticleSet(uint nb, float size, uint w_width, uint w_height);
+        static std::vector<Particle> createParticleSet(uint nb, float radius, uint w_width, uint w_height);
 
         /**
          * @brief Update the position of all particles contained in the vector
@@ -93,7 +93,7 @@ class Particle{
 
     private:
         Vector _position;
-        float _size;
+        float _radius;
         bool _fixed;  // Whether the particle can move or not
         Vector _speed;
         Vector _direction;
