@@ -38,7 +38,7 @@ float Particle::getSize() const{
  * @brief Calculate the area
 */
 float Particle::getArea() const{
-    return M_PI * pow((_size/2),2);
+    return M_PI * pow((_size),2);
 }
 
 bool Particle::isInContact(Particle& other) {
@@ -163,7 +163,7 @@ void Particle::applyGravity(std::vector<Particle>& particles){
  * @param particles Reference to a vector of particle
 */
 void Particle::applyCollision(std::vector<Particle>& particles){
-    float new_radius;
+    float new_area;
     for (Particle& p : particles) {
         if (p._toRemove) {
             break;  // If current particle is to be removed, no point to keep computing
@@ -181,8 +181,8 @@ void Particle::applyCollision(std::vector<Particle>& particles){
                     //p._size += other._size
 
                     // Area accurate grow
-                    new_radius = p.getArea() + other.getArea();
-                    p._size = sqrt(new_radius/M_PI)*2;
+                    new_area = p.getArea() + other.getArea();
+                    p._size = sqrt(new_area/M_PI);
 
                     // Medium grow
                     //p._size += other._size/std::log(p._size);
