@@ -138,8 +138,8 @@ void Window::draw_circle(int x0, int y0, uint radius){
 */
 void Window::draw_particle(Particle particle){
     Vector pos = particle.getPosition();
-    uint size = particle.getSize();
-    draw_circle(pos.x, pos.y, size);
+    uint radius = particle.getRadius();
+    draw_circle(pos.x, pos.y, radius);
 }
 
 /**

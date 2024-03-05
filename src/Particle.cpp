@@ -10,14 +10,14 @@ const float Particle::BH_RADIUS = 20;
 /**
  * @brief Constructor
  * @param position Vector describing the coordinates of the particle
- * @param size Radius of the particle (in pixels), we will use the size as mass in formulas
+ * @param radius Radius of the particle (in pixels), we will use the radius as mass in formulas
  * @param speed The speed of a particle
  * @param direction Vector describing the direction of the particle
  * @param fixed Whether the particle's position is fixed or not
 */
-Particle::Particle(Vector position, float size, Vector speed, Vector direction, bool fixed)
+Particle::Particle(Vector position, float radius, Vector speed, Vector direction, bool fixed)
     : _position {position}
-    , _size {size}
+    , _radius {radius}
     , _fixed {fixed}
     , _speed {speed}
     , _direction {direction}
@@ -28,22 +28,22 @@ Vector Particle::getPosition() const{
 }
 
 /**
- * @brief Size accessor
+ * @brief Radius accessor
 */
-float Particle::getSize() const{
-    return _size;
+float Particle::getRadius() const{
+    return _radius;
 }
 
 /**
  * @brief Calculate the area
 */
 float Particle::getArea() const{
-    return M_PI * pow((_size),2);
+    return M_PI * pow((_radius),2);
 }
 
 bool Particle::isInContact(Particle& other) {
     float center_dist = sqrt(pow(_position.x - other._position.x, 2) + pow(_position.y - other._position.y, 2));
-    float sum_of_reach = _size + other.getSize();
+    float sum_of_reach = _radius + other.getRadius();
     return sum_of_reach >= center_dist;
 }
 
@@ -84,11 +84,11 @@ void Particle::updatePosition(){
  * @brief Create a set of particle with random directions,
  *        including nb particles + the center fixed black hole
  * @param nb The number of particles to create
- * @param size The size of the particles to create
+ * @param radius The radius of the particles to create
  * @param w_width The width of the window
  * @param w_height The height of the window
 */
-std::vector<Particle> Particle::createParticleSet(uint nb, float size, uint w_width, uint w_height){
+std::vector<Particle> Particle::createParticleSet(uint nb, float radius, uint w_width, uint w_height){
     std::vector<Particle> particles;
 
     // Adding black hole
@@ -104,7 +104,7 @@ std::vector<Particle> Particle::createParticleSet(uint nb, float size, uint w_wi
         direction.x = (rand() % 2 == 1 ? -direction.x : direction.x);
         direction.y = (rand() % 2 == 1 ? -direction.y : direction.y);
 
-        particles.push_back(Particle(position, size, Vector{3,3}, direction)); // Maybe random speed?
+        particles.push_back(Particle(position, radius, Vector{3,3}, direction)); // Maybe random speed?
     }
 
     return particles;
@@ -131,7 +131,7 @@ const double Particle::G = 6.67430 * 500; // The gravitational constant in Newto
 double Particle::computeGravitationalForce(Particle& p1, Particle& p2){
     Vector distances = {p1._position.x - p2._position.x, p1._position.y - p2._position.y};
     float distance = sqrt(pow(distances.x, 2) + pow(distances.y, 2));
-    return distance == 0 ? 0 : (G * p1._size * p2._size) / pow(distance, 2);
+    return distance == 0 ? 0 : (G * p1._radius * p2._radius) / pow(distance, 2);
 }
 
 /**
@@ -182,22 +182,19 @@ void Particle::applyCollision(std::vector<Particle>& particles){
                         other._toRemove = true;
                     }
 
-                    
-
                     // Fast grow
-                    //p._size += other._size
+                    //p._radius += other._radius
 
                     // Area accurate grow
                     new_area = p.getArea() + other.getArea();
-                    p._size = sqrt(new_area/M_PI);
+                    p._radius = sqrt(new_area/M_PI);
 
                     // Medium grow
-                    //p._size += other._size/std::log(p._size);
+                    //p._radius += other._radius/std::log(p._radius);
                     
                     // Slow grow
-                    //p._size += std::log(1+other._size/p._size);
+                    //p._radius += std::log(1+other._radius/p._radius);
 
-                    //p._speed /= 2;
                     p._direction = Vector{(other._direction.x + p._direction.x) / 2, (other._direction.y + p._direction.y) / 2};
                 }
             }
