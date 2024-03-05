@@ -34,7 +34,7 @@ class Particle{
          * @param fixed Whether the particle is fixed or not
          * @param toRemove Whether the particle should be removed
         */
-        Particle(Vector position, float size, float speed, Vector direction, bool fixed = false);
+        Particle(Vector position, float size, Vector speed, Vector direction, bool fixed = false);
 
         /**
          * @brief Position accessor
@@ -95,7 +95,7 @@ class Particle{
         Vector _position;
         float _size;
         bool _fixed;  // Whether the particle can move or not
-        float _speed;
+        Vector _speed;
         Vector _direction;
         bool _toRemove = false;
 
