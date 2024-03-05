@@ -16,6 +16,9 @@ Created: 24/02/2024
 #include <cmath>
 #include <algorithm>
 
+#include <c3ga/Mvec.hpp>
+#include "c3gaTools.hpp"
+
 struct Vector {
     float x;
     float y;

@@ -12,6 +12,18 @@ if (CMAKE_COMPILER_IS_GNUCXX)
     )
 endif()
 
+
+# set the module path for "findLib.cmake"
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/modules/")
+
+# require Eigen
+find_package(Eigen3 REQUIRED)
+if(${EIGEN3_FOUND})
+    message(STATUS "lib EIGEN3 found")
+    message(STATUS "  version " ${EIGEN3_VERSION_STRING})
+    message(STATUS "  include " ${EIGEN3_INCLUDE_DIR})
+endif()
+
 find_package(SDL2 REQUIRED)
 
 include_directories(${SDL2_INCLUDE_DIRS})
@@ -21,6 +33,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 message("Starting compilation for Project ${CMAKE_PROJECT_NAME}")
+
+# add lib c3ga
+message(STATUS "c3ga garamon cmake part ..." )
+add_subdirectory(lib/garamon_c3ga INTERFACE)
+include_directories(${CMAKE_SOURCE_DIR}/lib/garamon_c3ga/src/) # important : other projects called by this cmake will know this include directory
+
 
 # Create a sources variable with a link to all cpp files to compile
 file(GLOB_RECURSE SOURCES
@@ -32,6 +50,16 @@ file(GLOB_RECURSE SOURCES
 add_executable(GravitySim ${SOURCES} )
 
 target_link_libraries(GravitySim ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} -lSDL2_image)
+
+
+
+# includes
+include_directories(${EIGEN3_INCLUDE_DIR})
+include_directories(${C3GA_INCLUDE_DIRS})
+
+# link
+target_link_libraries(GravitySim ${C3GA_LIBRARIES})
+
 
 # Set the directories that should be included in the build command for this target
 # when running g++ these will be included as -I/directory/path/
