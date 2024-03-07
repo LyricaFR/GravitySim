@@ -72,6 +72,13 @@ class Window{
         */
         void set_rendering_color(uint r, uint g, uint b, uint a);
 
+        /**
+         * @brief Move the point of focus of the window by adding x and y to the current position
+         * @param x The number of pixel to move horizontally from
+         * @param y The number of pixel to move vertically from
+        */
+        void move_window(int x, int y);
+
 
 
     private:
@@ -80,6 +87,7 @@ class Window{
         SDL_Renderer* gRenderer;
         uint w_width;
         uint w_height;
+        Vector<int> current_pos;  // Coordinates of the upper left corner, (0, 0) by default
 };
 
 #endif

@@ -21,7 +21,10 @@ int main(void){
 
     /* Window size */
     uint w_width = 1200;
-    uint w_height = 800;
+    uint w_height = 1200;
+
+    Vector<int> mouse_pos = {0, 0}; 
+    bool mouse_button_down = false;
 
     /* Create window */
     Window window = Window(w_width, w_height);
@@ -38,6 +41,27 @@ int main(void){
             if (e.type == SDL_KEYDOWN){
                 if (e.key.keysym.sym == SDLK_ESCAPE){
                     EXIT = true;
+                }
+            }
+
+            if (e.type == SDL_MOUSEBUTTONDOWN){
+                if (!mouse_button_down){
+                    mouse_button_down = true;
+                    SDL_GetMouseState( &mouse_pos.x, &mouse_pos.y );
+                }
+            }
+
+            if (e.type == SDL_MOUSEBUTTONUP){
+                if (mouse_button_down){
+                    mouse_button_down = false;
+                }
+            }
+
+            if (e.type == SDL_MOUSEMOTION){
+                if (mouse_button_down){
+                    window.move_window(e.motion.x - mouse_pos.x, e.motion.y - mouse_pos.y);
+                    mouse_pos.x = e.motion.x;
+                    mouse_pos.y = e.motion.y;
                 }
             }
         }

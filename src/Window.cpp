@@ -88,6 +88,7 @@ void Window::clear_window(){
 Window::Window(uint width, uint height)
     : w_width {width}
     , w_height {height}
+    , current_pos {Vector<int>{0, 0}}
     {
         init();
     }
@@ -139,7 +140,7 @@ void Window::draw_circle(int x0, int y0, uint radius){
 void Window::draw_particle(Particle particle){
     Vector pos = particle.getPosition();
     uint radius = particle.getRadius();
-    draw_circle(pos.x, pos.y, radius);
+    draw_circle(pos.x + current_pos.x, pos.y + current_pos.y, radius);
 }
 
 /**
@@ -168,4 +169,14 @@ void Window::draw_particles(std::vector<Particle>& particles){
 */
 void Window::set_rendering_color(uint r, uint g, uint b, uint a){
     SDL_SetRenderDrawColor( gRenderer, r, g, b, a );
+}
+
+/**
+ * @brief Move the point of focus of the window by adding x and y to the current position
+ * @param x The number of pixel to move horizontally from
+ * @param y The number of pixel to move vertically from
+*/
+void Window::move_window(int x, int y){
+    current_pos.x += x;
+    current_pos.y += y;
 }

@@ -15,7 +15,7 @@ const float Particle::BH_RADIUS = 20;
  * @param direction Vector describing the direction of the particle
  * @param fixed Whether the particle's position is fixed or not
 */
-Particle::Particle(Vector position, float radius, Vector speed, Vector direction, bool fixed)
+Particle::Particle(Vector<float> position, float radius, Vector<float> speed, Vector<float> direction, bool fixed)
     : _position {position}
     , _radius {radius}
     , _fixed {fixed}
@@ -23,7 +23,7 @@ Particle::Particle(Vector position, float radius, Vector speed, Vector direction
     , _direction {direction}
     {}
 
-Vector Particle::getPosition() const{
+Vector<float> Particle::getPosition() const{
     return _position;
 }
 
@@ -54,7 +54,7 @@ void Particle::updatePosition(){
     // TODO: apply attraction by other particles (Maybe in another function...)
     if (!_fixed){
 
-        Vector distances = {_direction.x - _position.x, _direction.y - _position.y};
+        Vector<float> distances = {_direction.x - _position.x, _direction.y - _position.y};
         float distance = sqrt(pow(distances.x, 2) + pow(distances.y, 2));
 
         distances.x /= distance;
@@ -93,18 +93,26 @@ std::vector<Particle> Particle::createParticleSet(uint nb, float radius, uint w_
 
     // Adding black hole
 
-    particles.push_back(Particle(Vector{(float) w_width / 2, (float) w_height / 2}, BH_RADIUS, Vector{0,0}, Vector{0, 0}, true ));
+    particles.push_back(Particle(Vector<float>{(float) w_width / 2,
+                                               (float) w_height / 2}, BH_RADIUS,
+                                               Vector<float>{0, 0},
+                                               Vector<float>{0, 0},
+                                               true ));
+
+    // The size of the area in which the particles positions can be generated in
+    uint spawnAreaX = w_width * 2;
+    uint spawnAreaY = w_height * 2;
 
     for (size_t i = 0; i < nb; i++){
-        Vector position = {(float) (rand() % w_width), (float) (rand() % w_height)};
+        Vector<float> position = {(float) ((rand() % spawnAreaX) - (spawnAreaX / 2)), (float) ((rand() % spawnAreaY) - (spawnAreaY / 2))};
 
         // TODO Generate random direction in a cleaner way.        
-        Vector direction = {(float) (rand() % w_width * 2000), (float) (rand() % w_height * 2000)};
+        Vector<float> direction = {(float) (rand() % w_width * 2000), (float) (rand() % w_height * 2000)};
 
         direction.x = (rand() % 2 == 1 ? -direction.x : direction.x);
         direction.y = (rand() % 2 == 1 ? -direction.y : direction.y);
 
-        particles.push_back(Particle(position, radius, Vector{3,3}, direction)); // Maybe random speed?
+        particles.push_back(Particle(position, radius, Vector<float>{3,3}, direction)); // Maybe random speed?
     }
 
     return particles;
@@ -121,7 +129,7 @@ void Particle::updateParticlesPosition(std::vector<Particle>& particles){
 }
 
 // Real value of the gravitational constant is 6.67430e-11
-const double Particle::G = 6.67430 * 500; // The gravitational constant in Newton's Law of Universal Gravitation
+const double Particle::G = 6.67430 * 800; // The gravitational constant in Newton's Law of Universal Gravitation
 
 /**
  * @brief Compute the gravitational force between two particle using Newton's equation for universal gravitation
@@ -129,7 +137,7 @@ const double Particle::G = 6.67430 * 500; // The gravitational constant in Newto
  * @param p2 Reference to the second particle
 */
 double Particle::computeGravitationalForce(Particle& p1, Particle& p2){
-    Vector distances = {p1._position.x - p2._position.x, p1._position.y - p2._position.y};
+    Vector<float> distances = {p1._position.x - p2._position.x, p1._position.y - p2._position.y};
     float distance = sqrt(pow(distances.x, 2) + pow(distances.y, 2));
     return distance == 0 ? 0 : (G * p1._radius * p2._radius) / pow(distance, 2);
 }
@@ -140,7 +148,7 @@ double Particle::computeGravitationalForce(Particle& p1, Particle& p2){
 */
 void Particle::applyGravity(std::vector<Particle>& particles){
     for (Particle& p : particles){
-        Vector total_force = {0, 0};
+        Vector<float> total_force = {0, 0};
 
         for (Particle& other : particles){
 
@@ -150,7 +158,7 @@ void Particle::applyGravity(std::vector<Particle>& particles){
                 double F = computeGravitationalForce(p, other);
 
                 // Vector from p to other
-                Vector force_direction = {other._position.x - p._position.x, other._position.y - p._position.y};
+                Vector<float> force_direction = {other._position.x - p._position.x, other._position.y - p._position.y};
 
                 total_force.x += F * force_direction.x;
                 total_force.y += F * force_direction.y;
@@ -198,7 +206,7 @@ void Particle::applyCollision(std::vector<Particle>& particles){
                     //p._radius += std::log(1+other._radius/p._radius);
 
                     //p._speed /= 2;
-                    p._direction = Vector{(other._direction.x + p._direction.x) / 2, (other._direction.y + p._direction.y) / 2};
+                    p._direction = Vector<float>{(other._direction.x + p._direction.x) / 2, (other._direction.y + p._direction.y) / 2};
                 }
             }
         }

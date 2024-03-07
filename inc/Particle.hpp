@@ -19,9 +19,10 @@ Created: 24/02/2024
 #include <c3ga/Mvec.hpp>
 #include "c3gaTools.hpp"
 
+template <typename T>
 struct Vector {
-    float x;
-    float y;
+    T x;
+    T y;
 };
 
 
@@ -37,12 +38,12 @@ class Particle{
          * @param fixed Whether the particle is fixed or not
          * @param toRemove Whether the particle should be removed
         */
-        Particle(Vector position, float radius, Vector speed, Vector direction, bool fixed = false);
+        Particle(Vector<float> position, float radius, Vector<float> speed, Vector<float> direction, bool fixed = false);
 
         /**
          * @brief Position accessor
         */
-        Vector getPosition() const;
+        Vector<float> getPosition() const;
 
         /**
          * @brief Radius accessor
@@ -95,11 +96,11 @@ class Particle{
         static void applyCollision(std::vector<Particle>& particles);
 
     private:
-        Vector _position;
+        Vector<float> _position;
         float _radius;
         bool _fixed;  // Whether the particle can move or not
-        Vector _speed;
-        Vector _direction;
+        Vector<float> _speed;
+        Vector<float> _direction;
         bool _toRemove = false;
 
         static const double G;
