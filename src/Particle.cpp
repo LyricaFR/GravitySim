@@ -93,21 +93,23 @@ std::vector<Particle> Particle::createParticleSet(uint nb, float radius, uint w_
 
     // Adding black hole
 
-    particles.push_back(Particle(Vector<float>{(float) w_width / 2,
-                                               (float) w_height / 2}, BH_RADIUS,
-                                               Vector<float>{0, 0},
-                                               Vector<float>{0, 0},
-                                               true ));
+    Vector<float> black_hole_pos = {(float) w_width / 2, (float) w_height / 2};
+
+    particles.push_back(Particle(black_hole_pos, BH_RADIUS,
+                                Vector<float>{0, 0},
+                                Vector<float>{0, 0},
+                                true ));
 
     // The size of the area in which the particles positions can be generated in
-    uint spawnAreaX = w_width * 2;
-    uint spawnAreaY = w_height * 2;
+    int spawnAreaX = w_width * 2;
+    int spawnAreaY = w_height * 2;
 
     for (size_t i = 0; i < nb; i++){
-        Vector<float> position = {(float) ((rand() % spawnAreaX) - (spawnAreaX / 2)), (float) ((rand() % spawnAreaY) - (spawnAreaY / 2))};
+        Vector<float> position = {(float) ((rand() % spawnAreaX) - (spawnAreaX / 2) + black_hole_pos.x),
+                                  (float) ((rand() % spawnAreaY) - (spawnAreaY / 2) + black_hole_pos.y)};
 
         // TODO Generate random direction in a cleaner way.        
-        Vector<float> direction = {(float) (rand() % w_width * 2000), (float) (rand() % w_height * 2000)};
+        Vector<float> direction = {(float) (rand() % w_width * 5000), (float) (rand() % w_height * 5000)};
 
         direction.x = (rand() % 2 == 1 ? -direction.x : direction.x);
         direction.y = (rand() % 2 == 1 ? -direction.y : direction.y);
