@@ -42,9 +42,13 @@ float Particle::getArea() const{
 }
 
 bool Particle::isInContact(Particle& other) {
-    float center_dist = sqrt(pow(_position.x - other._position.x, 2) + pow(_position.y - other._position.y, 2));
-    float sum_of_reach = _radius + other.getRadius();
-    return sum_of_reach >= center_dist;
+    c3ga::Mvec<float> center = c3ga::point<float>(_position.x, _position.y, 0.f);
+    c3ga::Mvec<float> center_other = c3ga::point<float>(other._position.x, other._position.y, 0.f);
+    float distance = (center - center_other).norm();
+
+    // float distance = sqrt(pow(_position.x - other._position.x, 2) + pow(_position.y - other._position.y, 2));
+    float sum_of_radius = _radius + other.getRadius();
+    return distance <= sum_of_radius;
 }
 
 /**
