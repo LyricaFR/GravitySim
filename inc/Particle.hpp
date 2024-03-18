@@ -29,6 +29,8 @@ struct Vector {
 class Particle{
     public:
 
+        c3ga::Mvec<double> _sphere = NULL;
+
         /**
          * @brief Constructor
          * @param position Vector describing the coordinates of the particle

@@ -21,7 +21,17 @@ Particle::Particle(Vector<float> position, float radius, Vector<float> speed, Ve
     , _fixed {fixed}
     , _speed {speed}
     , _direction {direction}
-    {}
+    {
+        int scaledown = 1000; // else values are too big and it causes segfault
+        const float const_radius = radius/scaledown;
+        const float x_pos = position.x/scaledown;
+        const float y_pos = position.y/scaledown;
+    c3ga::Mvec<float> pt1 = c3ga::point<float>(x_pos-const_radius, y_pos, 1);
+    c3ga::Mvec<float> pt2 = c3ga::point<float>(x_pos+const_radius, y_pos, 1);
+    c3ga::Mvec<float> pt3 = c3ga::point<float>(x_pos, y_pos+const_radius, 1) ;
+    c3ga::Mvec<float> pt4 = c3ga::point<float>(x_pos, y_pos, 1+const_radius);
+        _sphere = pt1 ^ pt2 ^ pt3 ^ pt4;
+    }
 
 Vector<float> Particle::getPosition() const{
     return _position;
@@ -42,9 +52,31 @@ float Particle::getArea() const{
 }
 
 bool Particle::isInContact(Particle& other) {
-    float center_dist = sqrt(pow(_position.x - other._position.x, 2) + pow(_position.y - other._position.y, 2));
+    /*float center_dist = sqrt(pow(_position.x - other._position.x, 2) + pow(_position.y - other._position.y, 2));
     float sum_of_reach = _radius + other.getRadius();
     return sum_of_reach >= center_dist;
+
+    */
+    /*std::cout << "self :  " << _sphere << std::endl;
+    std::cout << "self__x :  " << _position.x << "y "<< _position.y << "rad" << _radius  << std::endl;
+    std::cout << _sphere << std::endl;
+
+    std::cout << "other :  " << other._sphere << std::endl;
+    std::cout << "other__x :  " << other._position.x << "y "<< other._position.y << "rad" << other._radius  << std::endl;
+
+    std::cout << other._sphere << std::endl;*/
+
+    c3ga::Mvec<float> circle = (_sphere.dual() ^ other._sphere.dual()).dual();
+    //std::cout << circle << std::endl;
+    std::string mvType = c3ga::whoAmI(circle);
+    if(mvType == "circle (imaginary dual pair point)"){
+        return true;
+    }
+    if ( mvType == "imaginary circle (dual pair point)") {
+        return false;
+    }
+    //std::cout << mvType << std::endl;
+    return false;
 }
 
 /**
@@ -101,8 +133,8 @@ std::vector<Particle> Particle::createParticleSet(uint nb, float radius, uint w_
                                 true ));
 
     // The size of the area in which the particles positions can be generated in
-    int spawnAreaX = w_width * 2;
-    int spawnAreaY = w_height * 2;
+    int spawnAreaX = w_width ;
+    int spawnAreaY = w_height ;
 
     for (size_t i = 0; i < nb; i++){
         Vector<float> position = {(float) ((rand() % spawnAreaX) - (spawnAreaX / 2) + black_hole_pos.x),
@@ -201,6 +233,18 @@ void Particle::applyCollision(std::vector<Particle>& particles){
                     new_area = p.getArea() + other.getArea();
                     p._radius = sqrt(new_area/M_PI);
 
+                    
+
+        int scaledown = 1000; // else values are too big and it causes segfault
+        const float const_radius = p._radius/scaledown;
+        const float x_pos = p.getPosition().x/scaledown;
+        const float y_pos = p.getPosition().y/scaledown;
+    c3ga::Mvec<float> pt1 = c3ga::point<float>(x_pos-const_radius, y_pos, 1);
+    c3ga::Mvec<float> pt2 = c3ga::point<float>(x_pos+const_radius, y_pos, 1);
+    c3ga::Mvec<float> pt3 = c3ga::point<float>(x_pos, y_pos+const_radius, 1) ;
+    c3ga::Mvec<float> pt4 = c3ga::point<float>(x_pos, y_pos, 1+const_radius);
+        p._sphere = pt1 ^ pt2 ^ pt3 ^ pt4;
+    
                     // Medium grow
                     //p._radius += other._radius/std::log(p._radius);
                     
