@@ -33,7 +33,7 @@ int main(void){
     
     /* Test */
     // Generating particles
-    auto particles = Particle::createParticleSet(20, 10, w_width, w_height);
+    auto particles = Particle::createParticleSet(50, 10, w_width, w_height);
     window.set_rendering_color(0, 255, 255, 255);
 
     while (!EXIT){

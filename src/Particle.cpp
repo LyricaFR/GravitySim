@@ -52,11 +52,13 @@ float Particle::getArea() const{
 }
 
 bool Particle::isInContact(Particle& other) {
+    // LEGACY IMPLEMENTATION
     /*float center_dist = sqrt(pow(_position.x - other._position.x, 2) + pow(_position.y - other._position.y, 2));
     float sum_of_reach = _radius + other.getRadius();
     return sum_of_reach >= center_dist;
-
     */
+
+   // SPHERE c3ga IMPLEMENTATION
     /*std::cout << "self :  " << _sphere << std::endl;
     std::cout << "self__x :  " << _position.x << "y "<< _position.y << "rad" << _radius  << std::endl;
     std::cout << _sphere << std::endl;
@@ -64,7 +66,7 @@ bool Particle::isInContact(Particle& other) {
     std::cout << "other :  " << other._sphere << std::endl;
     std::cout << "other__x :  " << other._position.x << "y "<< other._position.y << "rad" << other._radius  << std::endl;
 
-    std::cout << other._sphere << std::endl;*/
+    std::cout << other._sphere << std::endl;
 
     c3ga::Mvec<float> circle = (_sphere.dual() ^ other._sphere.dual()).dual();
     //std::cout << circle << std::endl;
@@ -74,8 +76,18 @@ bool Particle::isInContact(Particle& other) {
     }
     if ( mvType == "imaginary circle (dual pair point)") {
         return false;
-    }
+    }*/
     //std::cout << mvType << std::endl;
+
+    // POINTS c3ga IMPLEMENTATION
+    auto self_position = getPosition();
+    auto self_point = c3ga::point<float>(self_position.x, self_position.y, 0);
+    auto other_position = other.getPosition();
+    auto other_point = c3ga::point<float>(other_position.x, other_position.y, 0);
+
+    float distance = (self_point - other_point).norm();
+    return distance < getRadius() + other.getRadius();
+
     return false;
 }
 
@@ -235,15 +247,16 @@ void Particle::applyCollision(std::vector<Particle>& particles){
 
                     
 
-        int scaledown = 1000; // else values are too big and it causes segfault
-        const float const_radius = p._radius/scaledown;
-        const float x_pos = p.getPosition().x/scaledown;
-        const float y_pos = p.getPosition().y/scaledown;
-    c3ga::Mvec<float> pt1 = c3ga::point<float>(x_pos-const_radius, y_pos, 1);
-    c3ga::Mvec<float> pt2 = c3ga::point<float>(x_pos+const_radius, y_pos, 1);
-    c3ga::Mvec<float> pt3 = c3ga::point<float>(x_pos, y_pos+const_radius, 1) ;
-    c3ga::Mvec<float> pt4 = c3ga::point<float>(x_pos, y_pos, 1+const_radius);
-        p._sphere = pt1 ^ pt2 ^ pt3 ^ pt4;
+                    int scaledown = 1000; // else values are too big and it causes segfault
+                    // sphere c3ga
+                    /*const float const_radius = p._radius/scaledown;
+                    const float x_pos = p.getPosition().x/scaledown;
+                    const float y_pos = p.getPosition().y/scaledown;
+                c3ga::Mvec<float> pt1 = c3ga::point<float>(x_pos-const_radius, y_pos, 1);
+                c3ga::Mvec<float> pt2 = c3ga::point<float>(x_pos+const_radius, y_pos, 1);
+                c3ga::Mvec<float> pt3 = c3ga::point<float>(x_pos, y_pos+const_radius, 1) ;
+                c3ga::Mvec<float> pt4 = c3ga::point<float>(x_pos, y_pos, 1+const_radius);
+                    p._sphere = pt1 ^ pt2 ^ pt3 ^ pt4;*/
     
                     // Medium grow
                     //p._radius += other._radius/std::log(p._radius);
