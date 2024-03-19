@@ -30,12 +30,10 @@ int main(void){
     Window window = Window(w_width, w_height);
     
     bool EXIT = false;
-    
     /* Test */
     // Generating particles
-    auto particles = Particle::createParticleSet(50, 10, w_width, w_height);
+    auto particles = Particle::createParticleSet(100, 10, w_width, w_height);
     window.set_rendering_color(0, 255, 255, 255);
-
     while (!EXIT){
         while (SDL_PollEvent(&e) != 0){
             if (e.type == SDL_KEYDOWN){
@@ -65,11 +63,12 @@ int main(void){
                 }
             }
         }
+        Particle::explode(particles, 75, w_width, w_height);
         Particle::applyGravity(particles);
+        Particle::applyCollision(particles);
         window.draw_particles(particles);
         window.update_window();
         Particle::updateParticlesPosition(particles);
-        Particle::applyCollision(particles);
         nanosleep(&tim, NULL);
         window.clear_window();
     }

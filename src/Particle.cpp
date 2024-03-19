@@ -14,23 +14,16 @@ const float Particle::BH_RADIUS = 20;
  * @param speed The speed of a particle
  * @param direction Vector describing the direction of the particle
  * @param fixed Whether the particle's position is fixed or not
+ * @param invincibleFrame How long the paeticles is not affected by collision
 */
-Particle::Particle(Vector<float> position, float radius, Vector<float> speed, Vector<float> direction, bool fixed)
+Particle::Particle(Vector<float> position, float radius, Vector<float> speed, Vector<float> direction, bool fixed, int invincibleFrame)
     : _position {position}
     , _radius {radius}
     , _fixed {fixed}
     , _speed {speed}
     , _direction {direction}
+    , _invincibleFrame {invincibleFrame}
     {
-        int scaledown = 1000; // else values are too big and it causes segfault
-        const float const_radius = radius/scaledown;
-        const float x_pos = position.x/scaledown;
-        const float y_pos = position.y/scaledown;
-    c3ga::Mvec<float> pt1 = c3ga::point<float>(x_pos-const_radius, y_pos, 1);
-    c3ga::Mvec<float> pt2 = c3ga::point<float>(x_pos+const_radius, y_pos, 1);
-    c3ga::Mvec<float> pt3 = c3ga::point<float>(x_pos, y_pos+const_radius, 1) ;
-    c3ga::Mvec<float> pt4 = c3ga::point<float>(x_pos, y_pos, 1+const_radius);
-        _sphere = pt1 ^ pt2 ^ pt3 ^ pt4;
     }
 
 Vector<float> Particle::getPosition() const{
@@ -58,27 +51,6 @@ bool Particle::isInContact(Particle& other) {
     return sum_of_reach >= center_dist;
     */
 
-   // SPHERE c3ga IMPLEMENTATION
-    /*std::cout << "self :  " << _sphere << std::endl;
-    std::cout << "self__x :  " << _position.x << "y "<< _position.y << "rad" << _radius  << std::endl;
-    std::cout << _sphere << std::endl;
-
-    std::cout << "other :  " << other._sphere << std::endl;
-    std::cout << "other__x :  " << other._position.x << "y "<< other._position.y << "rad" << other._radius  << std::endl;
-
-    std::cout << other._sphere << std::endl;
-
-    c3ga::Mvec<float> circle = (_sphere.dual() ^ other._sphere.dual()).dual();
-    //std::cout << circle << std::endl;
-    std::string mvType = c3ga::whoAmI(circle);
-    if(mvType == "circle (imaginary dual pair point)"){
-        return true;
-    }
-    if ( mvType == "imaginary circle (dual pair point)") {
-        return false;
-    }*/
-    //std::cout << mvType << std::endl;
-
     // POINTS c3ga IMPLEMENTATION
     auto self_position = getPosition();
     auto self_point = c3ga::point<float>(self_position.x, self_position.y, 0);
@@ -87,8 +59,6 @@ bool Particle::isInContact(Particle& other) {
 
     float distance = (self_point - other_point).norm();
     return distance < getRadius() + other.getRadius();
-
-    return false;
 }
 
 /**
@@ -158,7 +128,7 @@ std::vector<Particle> Particle::createParticleSet(uint nb, float radius, uint w_
         direction.x = (rand() % 2 == 1 ? -direction.x : direction.x);
         direction.y = (rand() % 2 == 1 ? -direction.y : direction.y);
 
-        particles.push_back(Particle(position, radius, Vector<float>{3,3}, direction)); // Maybe random speed?
+        particles.push_back(Particle(position, radius, Vector<float>{1000,1000}, direction)); // Maybe random speed?
     }
 
     return particles;
@@ -195,9 +165,12 @@ double Particle::computeGravitationalForce(Particle& p1, Particle& p2){
 void Particle::applyGravity(std::vector<Particle>& particles){
     for (Particle& p : particles){
         Vector<float> total_force = {0, 0};
-
+        if (p._invincibleFrame > 0) {
+            //p._invincibleFrame -= 1;
+            continue;
+        }
         for (Particle& other : particles){
-
+            
             if (&p != &other){ 
 
                 // Distance between the two particles
@@ -226,10 +199,19 @@ void Particle::applyGravity(std::vector<Particle>& particles){
 void Particle::applyCollision(std::vector<Particle>& particles){
     float new_area;
     for (Particle& p : particles) {
+
         if (p._toRemove) {
-            break;  // If current particle is to be removed, no point to keep computing
+            continue;  // If current particle is to be removed, no point to keep computing
+        }
+        if (p._invincibleFrame > 0) {
+            p._invincibleFrame -= 1;
+            continue;
         }
         for (Particle& other : particles) {
+            if (other._invincibleFrame > 0) {
+                p._invincibleFrame -= 1;
+                continue;
+            }
             if (&p != &other && !other._toRemove && !other._fixed) {
                 if (p.isInContact(other)) {
                     if (!p._toRemove && !other._toRemove) {
@@ -245,19 +227,6 @@ void Particle::applyCollision(std::vector<Particle>& particles){
                     new_area = p.getArea() + other.getArea();
                     p._radius = sqrt(new_area/M_PI);
 
-                    
-
-                    int scaledown = 1000; // else values are too big and it causes segfault
-                    // sphere c3ga
-                    /*const float const_radius = p._radius/scaledown;
-                    const float x_pos = p.getPosition().x/scaledown;
-                    const float y_pos = p.getPosition().y/scaledown;
-                c3ga::Mvec<float> pt1 = c3ga::point<float>(x_pos-const_radius, y_pos, 1);
-                c3ga::Mvec<float> pt2 = c3ga::point<float>(x_pos+const_radius, y_pos, 1);
-                c3ga::Mvec<float> pt3 = c3ga::point<float>(x_pos, y_pos+const_radius, 1) ;
-                c3ga::Mvec<float> pt4 = c3ga::point<float>(x_pos, y_pos, 1+const_radius);
-                    p._sphere = pt1 ^ pt2 ^ pt3 ^ pt4;*/
-    
                     // Medium grow
                     //p._radius += other._radius/std::log(p._radius);
                     
@@ -268,8 +237,32 @@ void Particle::applyCollision(std::vector<Particle>& particles){
                     p._direction = Vector<float>{(other._direction.x + p._direction.x) / 2, (other._direction.y + p._direction.y) / 2};
                 }
             }
+            
         }
     }
-
     particles.erase(std::remove_if(particles.begin(),particles.end(), [](const Particle& p) {return p._toRemove;}), particles.end());
+
+}
+
+
+void Particle::explode(std::vector<Particle>& particles, float threshold, uint w_width, uint w_height){
+    int exploding_speed = 20000;
+    float threshold_to_area = M_PI * pow((threshold),2);
+    // Check size
+    if (particles[0].getRadius() > threshold ) {
+        float lost_area = particles[0].getRadius()- 30;
+        particles[0]._radius = 30; // Reset black hole size
+        float target_radius = 10;
+        float target_area = M_PI * pow((target_radius),2);
+        int nbNewParticles = target_area/lost_area;
+        for (int i = 0; i < nbNewParticles ; i++){
+
+            Vector<float> direction = {(float) (rand() % w_width * 5000), (float) (rand() % w_height * 5000)};
+            Vector<float> speed = {exploding_speed+(rand()%exploding_speed),exploding_speed+(rand()%exploding_speed)};
+
+            direction.x = (rand() % 2 == 1 ? -direction.x : direction.x);
+            direction.y = (rand() % 2 == 1 ? -direction.y : direction.y);
+            particles.push_back(Particle(particles[0].getPosition(), target_radius, speed, direction, false, 9999));
+        }
+    }
 }
