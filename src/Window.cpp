@@ -132,6 +132,8 @@ void Window::draw_particle(Particle particle) {
 void Window::draw_particles(std::vector<Particle>& particles) {
     for (Particle& p : particles) {
         set_rendering_color(0, 0, 255, 255);
+        // Vector<float> pos = p.getPosition();
+        // set_rendering_color(pos.x, pos.y, 255, 255);
         if (p.isInvincible()) {
             set_rendering_color(255, 255, 0, 255);
         }

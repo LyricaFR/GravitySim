@@ -29,7 +29,7 @@ c3ga::Mvec<double> Particle::createCircle() {
     c3ga::Mvec<double> pt3 = c3ga::point<double>(x_pos, y_pos + const_radius, 1);
     c3ga::Mvec<double> pt4 = c3ga::point<double>(x_pos, y_pos, 1 + const_radius);
 
-    c3ga::Mvec<double> circle = pt1 ^ pt2 ^ pt3;
+    c3ga::Mvec<double> circle = pt1 ^ pt2 ^ pt3 ^ pt4;
     return circle;
 }
 
@@ -59,22 +59,18 @@ bool Particle::isInvincible() {
 }
 bool Particle::isInContact(Particle& other) {
     // LEGACY IMPLEMENTATION
-    /*float center_dist = sqrt(pow(_position.x - other._position.x, 2) + pow(_position.y - other._position.y, 2));
+    float center_dist = sqrt(pow(_position.x - other._position.x, 2) + pow(_position.y - other._position.y, 2));
     float sum_of_reach = _radius + other.getRadius();
     return sum_of_reach >= center_dist;
-    */
+    
 
     // Using circle, not working for unknown reasons
-    /*c3ga::Mvec<double> circle = (createCircle().dual() ^ other.createCircle().dual());
-
+    c3ga::Mvec<double> circle = (createCircle().dual() ^ other.createCircle().dual());
     double inter = circle |circle;
     if (inter< 0.0) {
-      std::cout << circle << std::endl;
-    std::cout << "- > "<< inter<< std::endl;
-    std::cout << "COLLIIIIIIIDDDDDDDIIIIIIIIIIIINNNNNNNNGGGG"<< std::endl;
      return true;
     }
-     return false;*/
+     return false;
 
     // POINTS c3ga IMPLEMENTATION
     auto self_position = getPosition();
@@ -147,7 +143,7 @@ std::vector<Particle> Particle::createParticleSet(uint nb, float radius, uint w_
                                   (float)((rand() % spawnAreaY) - (spawnAreaY / 2) + black_hole_pos.y)};
 
         // TODO Generate random direction in a cleaner way.
-        Vector<float> direction = {(float)(rand() % w_width * 5000), (float)(rand() % w_height * 5000)};
+        Vector<float> direction = {(float)(rand() % 1500 * 5000), (float)(rand() % 1500 * 5000)};
 
         direction.x = (rand() % 2 == 1 ? -direction.x : direction.x);
         direction.y = (rand() % 2 == 1 ? -direction.y : direction.y);
@@ -317,7 +313,7 @@ void Particle::explode(std::vector<Particle>& particles, int nbMax, uint w_width
                 surplus_area -= new_area;
             }
             
-            Vector<float> direction = {(float)(rand() % w_width * 5000), (float)(rand() % w_height * 5000)};
+            Vector<float> direction = {(float)(rand() % 1500 * (rand()%5000)), (float)(rand() % 1500 * (rand()%5000))};
             Vector<float> speed = {exploding_speed + (rand() % exploding_speed), exploding_speed + (rand() % exploding_speed)};
 
             direction.x = (rand() % 2 == 1 ? -direction.x : direction.x);

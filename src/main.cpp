@@ -6,7 +6,14 @@ Created: 24/02/2024
 #include <iostream>
 #include <Window.hpp>
 
-int main(void){
+int main(int argc, char *argv[]){
+
+    bool autoExplode = false;
+    if (argc >= 2){
+        if (strcmp(argv[1], "--auto-explode") == 0){
+            autoExplode = true;
+        }
+    }
 
     std::srand(std::time(0));
 
@@ -77,7 +84,9 @@ int main(void){
             }
         }
 
-        Particle::explode(particles, 75, w_width, w_height, false);
+        if (autoExplode){
+            Particle::explode(particles, 75, w_width, w_height, false); // Auto explosion
+        }
         Particle::applyGravity(particles);
         Particle::applyCollision(particles);
         window.draw_particles(particles);
