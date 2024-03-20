@@ -305,13 +305,14 @@ void Particle::explode(std::vector<Particle>& particles, int nbMax, uint w_width
     float initial_radius = 10;
     float threshold_to_area = M_PI * pow((initial_radius),2);
 
-    std::cout << particles.size() << std::endl;
     // Check size
+    //std::cout << particles[0].getArea()/threshold_to_area  << std::endl;
+
     //std::cout <<particles[0]._invincibleFrame << std::endl;
     if (particles[0].getArea() > threshold_to_area * nbMax + 10) {
-        particles[0]._radius = 10; // Reset black hole size
 
-        for (int i = 0; i < nbMax ; i++){
+        //std::cout << "---------  "<< particles[0].getArea()/threshold_to_area -1  << std::endl;
+        for (int i = 0; i < particles[0].getArea()/threshold_to_area -1 ; i++){
 
             Vector<float> direction = {(float) (rand() % w_width * 5000), (float) (rand() % w_height * 5000)};
             Vector<float> speed = {exploding_speed+(rand()%exploding_speed),exploding_speed+(rand()%exploding_speed)};
@@ -320,6 +321,7 @@ void Particle::explode(std::vector<Particle>& particles, int nbMax, uint w_width
             direction.y = (rand() % 2 == 1 ? -direction.y : direction.y);
             particles.push_back(Particle(particles[0].getPosition(), initial_radius, speed, direction, false, 100));
         }
+        particles[0]._radius = 10; // Reset black hole size
         //exploded += 1;
     }
 }
