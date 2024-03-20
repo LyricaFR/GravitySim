@@ -104,7 +104,8 @@ class Particle{
 
         static void explode_old(std::vector<Particle>& particles, float threshold, uint w_width, uint w_height, int &exploded);
 
-         c3ga::Mvec<double> createCircle();
+        c3ga::Mvec<double> createCircle();
+        static void newParticle(std::vector<Particle>& particles, uint w_width, uint w_height);
 
     private:
         Vector<float> _position;

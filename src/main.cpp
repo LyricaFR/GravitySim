@@ -32,7 +32,7 @@ int main(void){
     bool EXIT = false;
     /* Test */
     // Generating particles
-    auto particles = Particle::createParticleSet(50, 10, w_width, w_height);
+    auto particles = Particle::createParticleSet(20, 10, w_width, w_height);
     window.set_rendering_color(0, 255, 255, 255);
     int exploded = 0;
     while (!EXIT){
@@ -62,6 +62,13 @@ int main(void){
                     mouse_pos.x = e.motion.x;
                     mouse_pos.y = e.motion.y;
                 }
+            }
+            switch (e.type) {
+                case SDL_KEYDOWN:
+                    switch (e.key.keysym.sym){
+                        case SDLK_SPACE:
+                        Particle::newParticle(particles, w_width, w_height );
+                    }
             }
         }
 

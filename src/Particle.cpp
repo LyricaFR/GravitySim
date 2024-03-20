@@ -1,5 +1,5 @@
 /*
-Author: Kevin QUACH 
+Author: Kevin QUACH
 Created: 24/02/2024
 */
 
@@ -15,52 +15,45 @@ const float Particle::BH_RADIUS = 20;
  * @param direction Vector describing the direction of the particle
  * @param fixed Whether the particle's position is fixed or not
  * @param invincibleFrame How long the paeticles is not affected by collision
-*/
+ */
 Particle::Particle(Vector<float> position, float radius, Vector<float> speed, Vector<float> direction, bool fixed, int invincibleFrame)
-    : _position {position}
-    , _radius {radius}
-    , _fixed {fixed}
-    , _speed {speed}
-    , _direction {direction}
-    , _invincibleFrame {invincibleFrame}
-    { 
-    }
+    : _position{position}, _radius{radius}, _fixed{fixed}, _speed{speed}, _direction{direction}, _invincibleFrame{invincibleFrame} {
+}
 
-     c3ga::Mvec<double> Particle::createCircle(){
-        const double const_radius = _radius;
-        const double x_pos = _position.x;
-        const double y_pos = _position.y;
-    c3ga::Mvec<double> pt1 = c3ga::point<double>(x_pos-const_radius, y_pos, 1);
-    c3ga::Mvec<double> pt2 = c3ga::point<double>(x_pos+const_radius, y_pos, 1);
-    c3ga::Mvec<double> pt3 = c3ga::point<double>(x_pos, y_pos+const_radius, 1) ;
-    c3ga::Mvec<double> pt4 = c3ga::point<double>(x_pos, y_pos, 1+const_radius);
+c3ga::Mvec<double> Particle::createCircle() {
+    const double const_radius = _radius;
+    const double x_pos = _position.x;
+    const double y_pos = _position.y;
+    c3ga::Mvec<double> pt1 = c3ga::point<double>(x_pos - const_radius, y_pos, 1);
+    c3ga::Mvec<double> pt2 = c3ga::point<double>(x_pos + const_radius, y_pos, 1);
+    c3ga::Mvec<double> pt3 = c3ga::point<double>(x_pos, y_pos + const_radius, 1);
+    c3ga::Mvec<double> pt4 = c3ga::point<double>(x_pos, y_pos, 1 + const_radius);
 
-        c3ga::Mvec<double> circle = pt1 ^ pt2 ^ pt3 ;
-                return circle; 
-     }
+    c3ga::Mvec<double> circle = pt1 ^ pt2 ^ pt3;
+    return circle;
+}
 
-Vector<float> Particle::getPosition() const{
+Vector<float> Particle::getPosition() const {
     return _position;
 }
 
 /**
  * @brief Radius accessor
-*/
-float Particle::getRadius() const{
+ */
+float Particle::getRadius() const {
     return _radius;
 }
 
 /**
  * @brief Calculate the area
-*/
-float Particle::getArea() const{
-    return M_PI * pow((_radius),2);
+ */
+float Particle::getArea() const {
+    return M_PI * pow((_radius), 2);
 }
 
 bool Particle::isFixed() {
     return _fixed;
 }
-
 
 bool Particle::isInContact(Particle& other) {
     // LEGACY IMPLEMENTATION
@@ -69,17 +62,17 @@ bool Particle::isInContact(Particle& other) {
     return sum_of_reach >= center_dist;
     */
 
-   // Using circle, not working for unknown reasons
-   c3ga::Mvec<double> circle = (createCircle().dual() ^ other.createCircle().dual());
+    // Using circle, not working for unknown reasons
+    /*c3ga::Mvec<double> circle = (createCircle().dual() ^ other.createCircle().dual());
 
-   double inter = circle |circle;
-   if (inter< 0.0) {  
-     std::cout << circle << std::endl;
-   std::cout << "- > "<< inter<< std::endl;
-   std::cout << "COLLIIIIIIIDDDDDDDIIIIIIIIIIIINNNNNNNNGGGG"<< std::endl;
-    return true;
-   }
-    return false;
+    double inter = circle |circle;
+    if (inter< 0.0) {
+      std::cout << circle << std::endl;
+    std::cout << "- > "<< inter<< std::endl;
+    std::cout << "COLLIIIIIIIDDDDDDDIIIIIIIIIIIINNNNNNNNGGGG"<< std::endl;
+     return true;
+    }
+     return false;*/
 
     // POINTS c3ga IMPLEMENTATION
     auto self_position = getPosition();
@@ -93,11 +86,10 @@ bool Particle::isInContact(Particle& other) {
 
 /**
  * @brief Update a particle's position
-*/
-void Particle::updatePosition(){
+ */
+void Particle::updatePosition() {
     // TODO: apply attraction by other particles (Maybe in another function...)
-    if (!_fixed){
-
+    if (!_fixed) {
         Vector<float> distances = {_direction.x - _position.x, _direction.y - _position.y};
         float distance = sqrt(pow(distances.x, 2) + pow(distances.y, 2));
 
@@ -115,7 +107,7 @@ void Particle::updatePosition(){
         float step_x = distances.x * _speed.x;
         float step_y = distances.y * _speed.y;
 
-        _position.x = _position.x + step_x; 
+        _position.x = _position.x + step_x;
         _position.y = _position.y + step_y;
 
         // Updating the direction to keep the particle moving
@@ -131,34 +123,34 @@ void Particle::updatePosition(){
  * @param radius The radius of the particles to create
  * @param w_width The width of the window
  * @param w_height The height of the window
-*/
-std::vector<Particle> Particle::createParticleSet(uint nb, float radius, uint w_width, uint w_height){
+ */
+std::vector<Particle> Particle::createParticleSet(uint nb, float radius, uint w_width, uint w_height) {
     std::vector<Particle> particles;
 
     // Adding black hole
 
-    Vector<float> black_hole_pos = {(float) w_width / 2, (float) w_height / 2};
+    Vector<float> black_hole_pos = {(float)w_width / 2, (float)w_height / 2};
 
     particles.push_back(Particle(black_hole_pos, BH_RADIUS,
-                                Vector<float>{0, 0},
-                                Vector<float>{0, 0},
-                                true ));
+                                 Vector<float>{0, 0},
+                                 Vector<float>{0, 0},
+                                 true));
 
     // The size of the area in which the particles positions can be generated in
-    int spawnAreaX = w_width ;
-    int spawnAreaY = w_height ;
+    int spawnAreaX = w_width;
+    int spawnAreaY = w_height;
 
-    for (size_t i = 0; i < nb; i++){
-        Vector<float> position = {(float) ((rand() % spawnAreaX) - (spawnAreaX / 2) + black_hole_pos.x),
-                                  (float) ((rand() % spawnAreaY) - (spawnAreaY / 2) + black_hole_pos.y)};
+    for (size_t i = 0; i < nb; i++) {
+        Vector<float> position = {(float)((rand() % spawnAreaX) - (spawnAreaX / 2) + black_hole_pos.x),
+                                  (float)((rand() % spawnAreaY) - (spawnAreaY / 2) + black_hole_pos.y)};
 
-        // TODO Generate random direction in a cleaner way.        
-        Vector<float> direction = {(float) (rand() % w_width * 5000), (float) (rand() % w_height * 5000)};
+        // TODO Generate random direction in a cleaner way.
+        Vector<float> direction = {(float)(rand() % w_width * 5000), (float)(rand() % w_height * 5000)};
 
         direction.x = (rand() % 2 == 1 ? -direction.x : direction.x);
         direction.y = (rand() % 2 == 1 ? -direction.y : direction.y);
 
-        particles.push_back(Particle(position, radius, Vector<float>{1000,1000}, direction)); // Maybe random speed?
+        particles.push_back(Particle(position, radius, Vector<float>{1000, 1000}, direction));  // Maybe random speed?
     }
 
     return particles;
@@ -167,22 +159,22 @@ std::vector<Particle> Particle::createParticleSet(uint nb, float radius, uint w_
 /**
  * @brief Update the position of all particles contained in the vector
  * @param particles Reference to a vector of particle
-*/
-void Particle::updateParticlesPosition(std::vector<Particle>& particles){
-    for (Particle& p : particles){
+ */
+void Particle::updateParticlesPosition(std::vector<Particle>& particles) {
+    for (Particle& p : particles) {
         p.updatePosition();
     }
 }
 
 // Real value of the gravitational constant is 6.67430e-11
-const double Particle::G = 6.67430 * 800; // The gravitational constant in Newton's Law of Universal Gravitation
+const double Particle::G = 6.67430 * 800;  // The gravitational constant in Newton's Law of Universal Gravitation
 
 /**
  * @brief Compute the gravitational force between two particle using Newton's equation for universal gravitation
  * @param p1 Reference to the first particle
  * @param p2 Reference to the second particle
-*/
-double Particle::computeGravitationalForce(Particle& p1, Particle& p2){
+ */
+double Particle::computeGravitationalForce(Particle& p1, Particle& p2) {
     Vector<float> distances = {p1._position.x - p2._position.x, p1._position.y - p2._position.y};
     float distance = sqrt(pow(distances.x, 2) + pow(distances.y, 2));
     return distance == 0 ? 0 : (G * p1._radius * p2._radius) / pow(distance, 2);
@@ -191,18 +183,16 @@ double Particle::computeGravitationalForce(Particle& p1, Particle& p2){
 /**
  * @brief Apply the gravity of all the particle on all other particles
  * @param particles Reference to a vector of particle
-*/
-void Particle::applyGravity(std::vector<Particle>& particles){
-    for (Particle& p : particles){
+ */
+void Particle::applyGravity(std::vector<Particle>& particles) {
+    for (Particle& p : particles) {
         Vector<float> total_force = {0, 0};
         if (p._invincibleFrame > 0) {
-            //p._invincibleFrame -= 1;
+            // p._invincibleFrame -= 1;
             continue;
         }
-        for (Particle& other : particles){
-            
-            if (&p != &other){ 
-
+        for (Particle& other : particles) {
+            if (&p != &other) {
                 // Distance between the two particles
                 double F = computeGravitationalForce(p, other);
 
@@ -214,8 +204,8 @@ void Particle::applyGravity(std::vector<Particle>& particles){
             }
         }
 
-        p._speed.x += (total_force.x * p._speed.x) /p._direction.x;
-        p._speed.y += (total_force.y * p._speed.y) /p._direction.y;
+        p._speed.x += (total_force.x * p._speed.x) / p._direction.x;
+        p._speed.y += (total_force.y * p._speed.y) / p._direction.y;
 
         p._direction.x += total_force.x;
         p._direction.y += total_force.y;
@@ -225,11 +215,10 @@ void Particle::applyGravity(std::vector<Particle>& particles){
 /**
  * @brief Apply the collision of all the particle on all other particles
  * @param particles Reference to a vector of particle
-*/
-void Particle::applyCollision(std::vector<Particle>& particles){
+ */
+void Particle::applyCollision(std::vector<Particle>& particles) {
     float new_area;
     for (Particle& p : particles) {
-
         if (p._toRemove) {
             continue;  // If current particle is to be removed, no point to keep computing
         }
@@ -239,7 +228,7 @@ void Particle::applyCollision(std::vector<Particle>& particles){
         }
         for (Particle& other : particles) {
             if (other._invincibleFrame > 0) {
-                //other._invincibleFrame -= 1;
+                // other._invincibleFrame -= 1;
                 continue;
             }
             if (&p != &other && !other._toRemove && !other._fixed) {
@@ -248,90 +237,99 @@ void Particle::applyCollision(std::vector<Particle>& particles){
                         other._toRemove = true;
                     }
 
-                    
-
                     // Fast grow
-                    //p._radius += other._radius
+                    // p._radius += other._radius
 
                     // Area accurate grow
                     new_area = p.getArea() + other.getArea();
-                    p._radius = sqrt(new_area/M_PI);
+                    p._radius = sqrt(new_area / M_PI);
 
                     // Medium grow
-                    //p._radius += other._radius/std::log(p._radius);
-                    
-                    // Slow grow
-                    //p._radius += std::log(1+other._radius/p._radius);
+                    // p._radius += other._radius/std::log(p._radius);
 
-                    //p._speed /= 2;
+                    // Slow grow
+                    // p._radius += std::log(1+other._radius/p._radius);
+
+                    // p._speed /= 2;
                     p._direction = Vector<float>{(other._direction.x + p._direction.x) / 2, (other._direction.y + p._direction.y) / 2};
                 }
             }
-            
         }
     }
-    particles.erase(std::remove_if(particles.begin(),particles.end(), [](const Particle& p) {return p._toRemove & !p._invincibleFrame;}), particles.end());
-
+    particles.erase(std::remove_if(particles.begin(), particles.end(), [](const Particle& p) { return p._toRemove & !p._invincibleFrame; }), particles.end());
 }
 
-
-void Particle::explode_old(std::vector<Particle>& particles, float threshold, uint w_width, uint w_height, int &exploded){
+void Particle::explode_old(std::vector<Particle>& particles, float threshold, uint w_width, uint w_height, int& exploded) {
     int exploding_speed = 40000;
-    float threshold_to_area = M_PI * pow((threshold),2);
+    float threshold_to_area = M_PI * pow((threshold), 2);
 
-        std::cout << particles.size() << std::endl;
+    std::cout << particles.size() << std::endl;
     // Check size
-    //std::cout <<particles[0]._invincibleFrame << std::endl;
-    if (particles[0].getArea() > threshold_to_area ) {
-        float lost_radius = particles[0].getRadius()- 30;
+    // std::cout <<particles[0]._invincibleFrame << std::endl;
+    if (particles[0].getArea() > threshold_to_area) {
+        float lost_radius = particles[0].getRadius() - 30;
 
         float target_radius = 10;
-        
-        float lost_area = particles[0].getArea() -  M_PI * pow((target_radius),2);
-        
-        particles[0]._radius = 30; // Reset black hole size
-        float target_area = M_PI * pow((target_radius),2);
-        int nbNewParticles = lost_area/target_area;
+
+        float lost_area = particles[0].getArea() - M_PI * pow((target_radius), 2);
+
+        particles[0]._radius = 30;  // Reset black hole size
+        float target_area = M_PI * pow((target_radius), 2);
+        int nbNewParticles = lost_area / target_area;
 
         std::cout << lost_area << std::endl;
         std::cout << target_area << std::endl;
         std::cout << nbNewParticles << std::endl;
-        for (int i = 0; i < nbNewParticles ; i++){
-
-            Vector<float> direction = {(float) (rand() % w_width * 5000), (float) (rand() % w_height * 5000)};
-            Vector<float> speed = {exploding_speed+(rand()%exploding_speed),exploding_speed+(rand()%exploding_speed)};
+        for (int i = 0; i < nbNewParticles; i++) {
+            Vector<float> direction = {(float)(rand() % w_width * 5000), (float)(rand() % w_height * 5000)};
+            Vector<float> speed = {exploding_speed + (rand() % exploding_speed), exploding_speed + (rand() % exploding_speed)};
 
             direction.x = (rand() % 2 == 1 ? -direction.x : direction.x);
             direction.y = (rand() % 2 == 1 ? -direction.y : direction.y);
             particles.push_back(Particle(particles[0].getPosition(), target_radius, speed, direction, false, 100));
         }
-        //exploded += 1;
+        // exploded += 1;
     }
 }
 
-
-void Particle::explode(std::vector<Particle>& particles, int nbMax, uint w_width, uint w_height, int &exploded){
+void Particle::explode(std::vector<Particle>& particles, int nbMax, uint w_width, uint w_height, int& exploded) {
     int exploding_speed = 400000;
     float initial_radius = 10;
-    float threshold_to_area = M_PI * pow((initial_radius),2);
+    float threshold_to_area = M_PI * pow((initial_radius), 2);
 
     // Check size
-    //std::cout << particles[0].getArea()/threshold_to_area  << std::endl;
+    // std::cout << particles[0].getArea()/threshold_to_area  << std::endl;
 
-    //std::cout <<particles[0]._invincibleFrame << std::endl;
+    // std::cout <<particles[0]._invincibleFrame << std::endl;
     if (particles[0].getArea() > threshold_to_area * nbMax + 10) {
-
-        //std::cout << "---------  "<< particles[0].getArea()/threshold_to_area -1  << std::endl;
-        for (int i = 0; i < particles[0].getArea()/threshold_to_area -1 ; i++){
-
-            Vector<float> direction = {(float) (rand() % w_width * 5000), (float) (rand() % w_height * 5000)};
-            Vector<float> speed = {exploding_speed+(rand()%exploding_speed),exploding_speed+(rand()%exploding_speed)};
+        // std::cout << "---------  "<< particles[0].getArea()/threshold_to_area -1  << std::endl;
+        for (int i = 0; i < particles[0].getArea() / threshold_to_area - 1; i++) {
+            Vector<float> direction = {(float)(rand() % w_width * 5000), (float)(rand() % w_height * 5000)};
+            Vector<float> speed = {exploding_speed + (rand() % exploding_speed), exploding_speed + (rand() % exploding_speed)};
 
             direction.x = (rand() % 2 == 1 ? -direction.x : direction.x);
             direction.y = (rand() % 2 == 1 ? -direction.y : direction.y);
             particles.push_back(Particle(particles[0].getPosition(), initial_radius, speed, direction, false, 100));
         }
-        particles[0]._radius = 10; // Reset black hole size
-        //exploded += 1;
+        particles[0]._radius = 10;  // Reset black hole size
+        // exploded += 1;
     }
+}
+
+void Particle::newParticle(std::vector<Particle>& particles, uint w_width, uint w_height){
+    // The size of the area in which the particles positions can be generated in
+    int spawnAreaX = w_width;
+    int spawnAreaY = w_height;
+    Vector<float> black_hole_pos = {(float)w_width / 2, (float)w_height / 2};
+
+    Vector<float> position = {(float)((rand() % spawnAreaX) - (spawnAreaX / 2) + black_hole_pos.x),
+                                (float)((rand() % spawnAreaY) - (spawnAreaY / 2) + black_hole_pos.y)};
+
+    // TODO Generate random direction in a cleaner way.
+    Vector<float> direction = {(float)(rand() % w_width * 5000), (float)(rand() % w_height * 5000)};
+
+    direction.x = (rand() % 2 == 1 ? -direction.x : direction.x);
+    direction.y = (rand() % 2 == 1 ? -direction.y : direction.y);
+
+    particles.push_back(Particle(position, 10, Vector<float>{1000, 1000}, direction));  // Maybe random speed?
 }
