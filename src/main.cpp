@@ -64,15 +64,20 @@ int main(void){
                 }
             }
             switch (e.type) {
-                case SDL_KEYDOWN:
+                case SDL_KEYDOWN: 
                     switch (e.key.keysym.sym){
                         case SDLK_SPACE:
-                        Particle::newParticle(particles, w_width, w_height );
+                            Particle::newParticle(particles, w_width, w_height );
+                            break;
+                        case SDLK_e:
+                            Particle::explode(particles, 75, w_width, w_height, true);
+                            break;
+
                     }
             }
         }
 
-        Particle::explode(particles, 75, w_width, w_height, exploded);
+        Particle::explode(particles, 75, w_width, w_height, false);
         Particle::applyGravity(particles);
         Particle::applyCollision(particles);
         window.draw_particles(particles);

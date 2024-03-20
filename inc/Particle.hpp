@@ -100,7 +100,7 @@ class Particle{
         */
         static void applyCollision(std::vector<Particle>& particles);
 
-        static void explode(std::vector<Particle>& particles, int nbMax, uint w_width, uint w_height, int &exploded);
+        static void explode(std::vector<Particle>& particles, int nbMax, uint w_width, uint w_height, bool force);
 
         static void explode_old(std::vector<Particle>& particles, float threshold, uint w_width, uint w_height, int &exploded);
 

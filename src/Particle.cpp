@@ -292,7 +292,7 @@ void Particle::explode_old(std::vector<Particle>& particles, float threshold, ui
     }
 }
 
-void Particle::explode(std::vector<Particle>& particles, int nbMax, uint w_width, uint w_height, int& exploded) {
+void Particle::explode(std::vector<Particle>& particles, int nbMax, uint w_width, uint w_height, bool force) {
     int exploding_speed = 400000;
     float initial_radius = 10;
     float new_radius = 10, new_area = 0;
@@ -302,7 +302,7 @@ void Particle::explode(std::vector<Particle>& particles, int nbMax, uint w_width
     // std::cout << particles[0].getArea()/threshold_to_area  << std::endl;
 
     // std::cout <<particles[0]._invincibleFrame << std::endl;
-    if (particles[0].getArea() > threshold_to_area * nbMax + 10) {
+    if (particles[0].getArea() > threshold_to_area * nbMax + 10 || force) {
         // std::cout << "---------  "<< particles[0].getArea()/threshold_to_area -1  << std::endl;
         float surplus_area = particles[0].getArea() - threshold_to_area;
         while (surplus_area > 0) {
