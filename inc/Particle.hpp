@@ -27,7 +27,9 @@ struct Vector {
 
 
 class Particle{
-    public:
+    public:        
+        c3ga::Mvec<double> _sphere = NULL;
+
         /**
          * @brief Constructor
          * @param position Vector describing the coordinates of the particle
@@ -54,6 +56,11 @@ class Particle{
          * @brief Calculate the area
         */
         float getArea() const;
+
+        /**
+         * @brief Check whether the particle is fixed
+        */
+        bool isFixed();
 
         /**
          * @brief Check whether the particle is in contact with another
@@ -95,8 +102,9 @@ class Particle{
         */
         static void applyCollision(std::vector<Particle>& particles);
 
+        static void explode(std::vector<Particle>& particles, int nbMax, uint w_width, uint w_height, int &exploded);
 
-        static void explode(std::vector<Particle>& particles, float threshold, uint w_width, uint w_height);
+        static void explode_old(std::vector<Particle>& particles, float threshold, uint w_width, uint w_height, int &exploded);
 
     private:
         Vector<float> _position;
@@ -105,7 +113,7 @@ class Particle{
         Vector<float> _speed;
         Vector<float> _direction;
         bool _toRemove = false;
-        int _invincibleFrame;
+        int _invincibleFrame = 0;
 
         static const double G;
         static const float BH_RADIUS;

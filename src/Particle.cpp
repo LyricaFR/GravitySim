@@ -23,7 +23,15 @@ Particle::Particle(Vector<float> position, float radius, Vector<float> speed, Ve
     , _speed {speed}
     , _direction {direction}
     , _invincibleFrame {invincibleFrame}
-    {
+    { 
+        /*const double const_radius = radius;
+        const double x_pos = position.x;
+        const double y_pos = position.y;
+    c3ga::Mvec<double> pt1 = c3ga::point<double>(x_pos-const_radius, y_pos, 1);
+    c3ga::Mvec<double> pt2 = c3ga::point<double>(x_pos+const_radius, y_pos, 1);
+    c3ga::Mvec<double> pt3 = c3ga::point<double>(x_pos, y_pos+const_radius, 1) ;
+    c3ga::Mvec<double> pt4 = c3ga::point<double>(x_pos, y_pos, 1+const_radius);
+        _sphere = pt1 ^ pt2 ^ pt3 ^pt4;*/
     }
 
 Vector<float> Particle::getPosition() const{
@@ -44,12 +52,24 @@ float Particle::getArea() const{
     return M_PI * pow((_radius),2);
 }
 
+bool Particle::isFixed() {
+    return _fixed;
+}
+
+
 bool Particle::isInContact(Particle& other) {
     // LEGACY IMPLEMENTATION
     /*float center_dist = sqrt(pow(_position.x - other._position.x, 2) + pow(_position.y - other._position.y, 2));
     float sum_of_reach = _radius + other.getRadius();
     return sum_of_reach >= center_dist;
     */
+
+   // Using sphere / circle, not workinf for unknown reasons
+   /*c3ga::Mvec<double> circle = (_sphere.dual() ^ other._sphere.dual());
+   if ((double)circle | circle < 0.0) {
+    return true;
+   }
+    return false;*/
 
     // POINTS c3ga IMPLEMENTATION
     auto self_position = getPosition();
@@ -209,7 +229,7 @@ void Particle::applyCollision(std::vector<Particle>& particles){
         }
         for (Particle& other : particles) {
             if (other._invincibleFrame > 0) {
-                p._invincibleFrame -= 1;
+                //other._invincibleFrame -= 1;
                 continue;
             }
             if (&p != &other && !other._toRemove && !other._fixed) {
@@ -240,21 +260,32 @@ void Particle::applyCollision(std::vector<Particle>& particles){
             
         }
     }
-    particles.erase(std::remove_if(particles.begin(),particles.end(), [](const Particle& p) {return p._toRemove;}), particles.end());
+    particles.erase(std::remove_if(particles.begin(),particles.end(), [](const Particle& p) {return p._toRemove & !p._invincibleFrame;}), particles.end());
 
 }
 
 
-void Particle::explode(std::vector<Particle>& particles, float threshold, uint w_width, uint w_height){
-    int exploding_speed = 20000;
+void Particle::explode_old(std::vector<Particle>& particles, float threshold, uint w_width, uint w_height, int &exploded){
+    int exploding_speed = 40000;
     float threshold_to_area = M_PI * pow((threshold),2);
+
+        std::cout << particles.size() << std::endl;
     // Check size
-    if (particles[0].getRadius() > threshold ) {
-        float lost_area = particles[0].getRadius()- 30;
-        particles[0]._radius = 30; // Reset black hole size
+    //std::cout <<particles[0]._invincibleFrame << std::endl;
+    if (particles[0].getArea() > threshold_to_area ) {
+        float lost_radius = particles[0].getRadius()- 30;
+
         float target_radius = 10;
+        
+        float lost_area = particles[0].getArea() -  M_PI * pow((target_radius),2);
+        
+        particles[0]._radius = 30; // Reset black hole size
         float target_area = M_PI * pow((target_radius),2);
-        int nbNewParticles = target_area/lost_area;
+        int nbNewParticles = lost_area/target_area;
+
+        std::cout << lost_area << std::endl;
+        std::cout << target_area << std::endl;
+        std::cout << nbNewParticles << std::endl;
         for (int i = 0; i < nbNewParticles ; i++){
 
             Vector<float> direction = {(float) (rand() % w_width * 5000), (float) (rand() % w_height * 5000)};
@@ -262,7 +293,33 @@ void Particle::explode(std::vector<Particle>& particles, float threshold, uint w
 
             direction.x = (rand() % 2 == 1 ? -direction.x : direction.x);
             direction.y = (rand() % 2 == 1 ? -direction.y : direction.y);
-            particles.push_back(Particle(particles[0].getPosition(), target_radius, speed, direction, false, 9999));
+            particles.push_back(Particle(particles[0].getPosition(), target_radius, speed, direction, false, 100));
         }
+        //exploded += 1;
+    }
+}
+
+
+void Particle::explode(std::vector<Particle>& particles, int nbMax, uint w_width, uint w_height, int &exploded){
+    int exploding_speed = 40000;
+    float initial_radius = 10;
+    float threshold_to_area = M_PI * pow((initial_radius),2);
+
+    std::cout << particles.size() << std::endl;
+    // Check size
+    //std::cout <<particles[0]._invincibleFrame << std::endl;
+    if (particles[0].getArea() > threshold_to_area * nbMax + 10) {
+        particles[0]._radius = 10; // Reset black hole size
+
+        for (int i = 0; i < nbMax ; i++){
+
+            Vector<float> direction = {(float) (rand() % w_width * 5000), (float) (rand() % w_height * 5000)};
+            Vector<float> speed = {exploding_speed+(rand()%exploding_speed),exploding_speed+(rand()%exploding_speed)};
+
+            direction.x = (rand() % 2 == 1 ? -direction.x : direction.x);
+            direction.y = (rand() % 2 == 1 ? -direction.y : direction.y);
+            particles.push_back(Particle(particles[0].getPosition(), initial_radius, speed, direction, false, 100));
+        }
+        //exploded += 1;
     }
 }

@@ -132,27 +132,16 @@ void Window::draw_particle(Particle particle) {
 void Window::draw_particles(std::vector<Particle>& particles) {
     for (Particle& p : particles) {
         set_rendering_color(0, 0, 255, 255);
-
-        for (Particle& other : particles) {
+        if (p.isFixed()) {
+            set_rendering_color(255, 0, 0, 255);
+        }
+        /*for (Particle& other : particles) {
             if (&p != &other && p.isInContact(other)){
                 set_rendering_color(255, 0, 255, 255);  // Draw particle in pink if they are in contact
             }
-            /*c3ga::Mvec<double> circle_intersect = p._circle | other._circle;
-            // if ((double)(dual_sphere | dual_sphere) > 0) {
-            //     set_rendering_color(255, 0, 255, 255);  // Draw particle in pink if they are in contact
-            // }
-            std::stringstream ss;
-            ss << circle_intersect;
-            int a;
-            ss >> a;
-            if (a > 0) {
-                set_rendering_color(255, 0, 255, 255);
-            } else {
-                set_rendering_color(0, 0, 255, 255);
-            }*/
-
-            draw_particle(p);
-        }
+        }*/
+        draw_particle(p);
+        
     }
 }
 

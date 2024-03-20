@@ -34,6 +34,7 @@ int main(void){
     // Generating particles
     auto particles = Particle::createParticleSet(100, 10, w_width, w_height);
     window.set_rendering_color(0, 255, 255, 255);
+    int exploded = 0;
     while (!EXIT){
         while (SDL_PollEvent(&e) != 0){
             if (e.type == SDL_KEYDOWN){
@@ -63,7 +64,8 @@ int main(void){
                 }
             }
         }
-        Particle::explode(particles, 75, w_width, w_height);
+
+        Particle::explode(particles, 75, w_width, w_height, exploded);
         Particle::applyGravity(particles);
         Particle::applyCollision(particles);
         window.draw_particles(particles);
@@ -71,6 +73,10 @@ int main(void){
         Particle::updateParticlesPosition(particles);
         nanosleep(&tim, NULL);
         window.clear_window();
+        /*if (exploded) {
+            exploded += 1;
+        }*/
+        //std::cout << exploded << std::endl;
     }
 
     window.close_window();
