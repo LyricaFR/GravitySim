@@ -27,9 +27,7 @@ struct Vector {
 
 
 class Particle{
-    public:        
-        c3ga::Mvec<double> _sphere = NULL;
-
+    public: 
         /**
          * @brief Constructor
          * @param position Vector describing the coordinates of the particle
@@ -105,6 +103,8 @@ class Particle{
         static void explode(std::vector<Particle>& particles, int nbMax, uint w_width, uint w_height, int &exploded);
 
         static void explode_old(std::vector<Particle>& particles, float threshold, uint w_width, uint w_height, int &exploded);
+
+         c3ga::Mvec<double> createCircle();
 
     private:
         Vector<float> _position;

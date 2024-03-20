@@ -20,8 +20,8 @@ int main(void){
     SDL_Event e;
 
     /* Window size */
-    uint w_width = 600;
-    uint w_height = 600;
+    uint w_width = 1200;
+    uint w_height = 1200;
 
     Vector<int> mouse_pos = {0, 0}; 
     bool mouse_button_down = false;
@@ -32,7 +32,7 @@ int main(void){
     bool EXIT = false;
     /* Test */
     // Generating particles
-    auto particles = Particle::createParticleSet(100, 10, w_width, w_height);
+    auto particles = Particle::createParticleSet(50, 10, w_width, w_height);
     window.set_rendering_color(0, 255, 255, 255);
     int exploded = 0;
     while (!EXIT){

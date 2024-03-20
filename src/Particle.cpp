@@ -24,15 +24,20 @@ Particle::Particle(Vector<float> position, float radius, Vector<float> speed, Ve
     , _direction {direction}
     , _invincibleFrame {invincibleFrame}
     { 
-        /*const double const_radius = radius;
-        const double x_pos = position.x;
-        const double y_pos = position.y;
+    }
+
+     c3ga::Mvec<double> Particle::createCircle(){
+        const double const_radius = _radius;
+        const double x_pos = _position.x;
+        const double y_pos = _position.y;
     c3ga::Mvec<double> pt1 = c3ga::point<double>(x_pos-const_radius, y_pos, 1);
     c3ga::Mvec<double> pt2 = c3ga::point<double>(x_pos+const_radius, y_pos, 1);
     c3ga::Mvec<double> pt3 = c3ga::point<double>(x_pos, y_pos+const_radius, 1) ;
     c3ga::Mvec<double> pt4 = c3ga::point<double>(x_pos, y_pos, 1+const_radius);
-        _sphere = pt1 ^ pt2 ^ pt3 ^pt4;*/
-    }
+
+        c3ga::Mvec<double> circle = pt1 ^ pt2 ^ pt3 ;
+                return circle; 
+     }
 
 Vector<float> Particle::getPosition() const{
     return _position;
@@ -64,12 +69,17 @@ bool Particle::isInContact(Particle& other) {
     return sum_of_reach >= center_dist;
     */
 
-   // Using sphere / circle, not workinf for unknown reasons
-   /*c3ga::Mvec<double> circle = (_sphere.dual() ^ other._sphere.dual());
-   if ((double)circle | circle < 0.0) {
+   // Using circle, not working for unknown reasons
+   c3ga::Mvec<double> circle = (createCircle().dual() ^ other.createCircle().dual());
+
+   double inter = circle |circle;
+   if (inter< 0.0) {  
+     std::cout << circle << std::endl;
+   std::cout << "- > "<< inter<< std::endl;
+   std::cout << "COLLIIIIIIIDDDDDDDIIIIIIIIIIIINNNNNNNNGGGG"<< std::endl;
     return true;
    }
-    return false;*/
+    return false;
 
     // POINTS c3ga IMPLEMENTATION
     auto self_position = getPosition();
@@ -301,7 +311,7 @@ void Particle::explode_old(std::vector<Particle>& particles, float threshold, ui
 
 
 void Particle::explode(std::vector<Particle>& particles, int nbMax, uint w_width, uint w_height, int &exploded){
-    int exploding_speed = 40000;
+    int exploding_speed = 400000;
     float initial_radius = 10;
     float threshold_to_area = M_PI * pow((initial_radius),2);
 
