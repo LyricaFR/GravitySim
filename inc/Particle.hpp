@@ -60,15 +60,12 @@ class Particle{
         */
         bool isFixed();
 
+        bool isInvincible();
+
         /**
          * @brief Check whether the particle is in contact with another
         */
         bool isInContact(Particle& other);
-
-                /**
-         * @brief Check whether the particle is in contact with another
-        */
-        bool isInvulnerable();
 
         /**
          * @brief Update a particle's position
@@ -111,6 +108,8 @@ class Particle{
 
         c3ga::Mvec<double> createCircle();
         static void newParticle(std::vector<Particle>& particles, uint w_width, uint w_height);
+
+
 
     private:
         Vector<float> _position;

@@ -54,16 +54,15 @@ float Particle::getArea() const {
 bool Particle::isFixed() {
     return _fixed;
 }
-  bool Particle::isInvulnerable() {
+bool Particle::isInvincible() {
     return _invincibleFrame > 0;
-  }
-
+}
 bool Particle::isInContact(Particle& other) {
     // LEGACY IMPLEMENTATION
-    float center_dist = sqrt(pow(_position.x - other._position.x, 2) + pow(_position.y - other._position.y, 2));
+    /*float center_dist = sqrt(pow(_position.x - other._position.x, 2) + pow(_position.y - other._position.y, 2));
     float sum_of_reach = _radius + other.getRadius();
     return sum_of_reach >= center_dist;
-    
+    */
 
     // Using circle, not working for unknown reasons
     /*c3ga::Mvec<double> circle = (createCircle().dual() ^ other.createCircle().dual());
@@ -148,8 +147,7 @@ std::vector<Particle> Particle::createParticleSet(uint nb, float radius, uint w_
                                   (float)((rand() % spawnAreaY) - (spawnAreaY / 2) + black_hole_pos.y)};
 
         // TODO Generate random direction in a cleaner way.
-        //Vector<float> direction = {(float)(rand() % w_width * 5000), (float)(rand() % w_height * 5000)};
-        Vector<float> direction = {(float)(rand() % 1000 * (rand()%5000)), (float)(rand() % 1000 * (rand()%5000))};
+        Vector<float> direction = {(float)(rand() % w_width * 5000), (float)(rand() % w_height * 5000)};
 
         direction.x = (rand() % 2 == 1 ? -direction.x : direction.x);
         direction.y = (rand() % 2 == 1 ? -direction.y : direction.y);
@@ -319,7 +317,7 @@ void Particle::explode(std::vector<Particle>& particles, int nbMax, uint w_width
                 surplus_area -= new_area;
             }
             
-            Vector<float> direction = {(float)(rand() % 2000 * (rand()%5000)), (float)(rand() % 2000 * (rand()%5000))};
+            Vector<float> direction = {(float)(rand() % w_width * 5000), (float)(rand() % w_height * 5000)};
             Vector<float> speed = {exploding_speed + (rand() % exploding_speed), exploding_speed + (rand() % exploding_speed)};
 
             direction.x = (rand() % 2 == 1 ? -direction.x : direction.x);
