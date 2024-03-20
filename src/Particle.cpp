@@ -295,21 +295,32 @@ void Particle::explode_old(std::vector<Particle>& particles, float threshold, ui
 void Particle::explode(std::vector<Particle>& particles, int nbMax, uint w_width, uint w_height, int& exploded) {
     int exploding_speed = 400000;
     float initial_radius = 10;
+    float new_radius = 10, new_area = 0;
     float threshold_to_area = M_PI * pow((initial_radius), 2);
-
+    int min = 2, max = 15;
     // Check size
     // std::cout << particles[0].getArea()/threshold_to_area  << std::endl;
 
     // std::cout <<particles[0]._invincibleFrame << std::endl;
     if (particles[0].getArea() > threshold_to_area * nbMax + 10) {
         // std::cout << "---------  "<< particles[0].getArea()/threshold_to_area -1  << std::endl;
-        for (int i = 0; i < particles[0].getArea() / threshold_to_area - 1; i++) {
+        float surplus_area = particles[0].getArea() - threshold_to_area;
+        while (surplus_area > 0) {
+            if (surplus_area < 315) {
+                new_radius = sqrt(surplus_area / M_PI);
+                surplus_area = 0;
+            }else {
+                new_radius =  rand()%(max-min+1)+min;
+                new_area = M_PI * pow((new_radius), 2);
+                surplus_area -= new_area;
+            }
+            
             Vector<float> direction = {(float)(rand() % w_width * 5000), (float)(rand() % w_height * 5000)};
             Vector<float> speed = {exploding_speed + (rand() % exploding_speed), exploding_speed + (rand() % exploding_speed)};
 
             direction.x = (rand() % 2 == 1 ? -direction.x : direction.x);
             direction.y = (rand() % 2 == 1 ? -direction.y : direction.y);
-            particles.push_back(Particle(particles[0].getPosition(), initial_radius, speed, direction, false, 100));
+            particles.push_back(Particle(particles[0].getPosition(), new_radius, speed, direction, false, 100));
         }
         particles[0]._radius = 10;  // Reset black hole size
         // exploded += 1;
