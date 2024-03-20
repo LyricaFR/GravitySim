@@ -21,7 +21,7 @@ int main(void){
 
     /* Window size */
     uint w_width = 1200;
-    uint w_height = 1200;
+    uint w_height = 900;
 
     Vector<int> mouse_pos = {0, 0}; 
     bool mouse_button_down = false;

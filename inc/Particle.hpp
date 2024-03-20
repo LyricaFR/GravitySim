@@ -65,6 +65,11 @@ class Particle{
         */
         bool isInContact(Particle& other);
 
+                /**
+         * @brief Check whether the particle is in contact with another
+        */
+        bool isInvulnerable();
+
         /**
          * @brief Update a particle's position
         */
